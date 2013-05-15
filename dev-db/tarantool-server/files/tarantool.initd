@@ -1,0 +1,55 @@
+#!/sbin/runscript
+# Copyright 2013 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+
+# Author: Roman Tsisyk <roman@tarantool.org>
+
+extra_commands="configtest"
+description_configtest="Run syntax tests for configuration files."
+
+BOX=/usr/bin/tarantool_box
+USER=tarantool
+GROUP=tarantool
+
+CONFIGDIR=${CONFIGDIR:-/etc/tarantool}
+INSTANCE=${SVCNAME#*.}
+PID="/run/tarantool/${INSTANCE}.pid"
+CONFIG="${CONFIGDIR}/${INSTANCE}.cfg"
+RUNDIR=/var/lib/tarantool/${INSTANCE}
+
+depend() {
+	need localmount net
+	after bootmisc
+}
+
+checkconfig() {
+	checkpath -q -d -m 0755 -o ${USER}:${GROUP} /var/log/tarantool
+	${BOX} -c ${CONFIG} --check-config
+}
+
+configtest() {
+	ebegin "Checking ${SVCNAME} configuration"
+	checkconfig
+	eend $?
+}
+
+start_pre() {
+	checkconfig || return 1
+}
+
+start() {
+	ebegin "Starting ${SVCNAME}"
+	cd ${RUNDIR}
+	start-stop-daemon --start --exec ${BOX} --pidfile "${PID}" -u ${USER}:${GROUP} \
+		-- -c "${CONFIG}" --background
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping ${SVCNAME}"
+	start-stop-daemon --stop --quiet \
+		--exec ${BOX} --pidfile "${PID}"
+	eend $?
+}
+
+# vim: set ts=4 :

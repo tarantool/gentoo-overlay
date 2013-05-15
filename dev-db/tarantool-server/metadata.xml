@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+<maintainer>
+	<email>roman@tarantool.org</email>
+</maintainer>
+<longdescription>
+	Tarantool is an in-memory database designed to store the most volatile
+	and highly accessible web content. Tarantool has been extensively used
+	in production since 2009. Its key features include:
+	  * all data is maintained in RAM
+	  * data persistence is implemented using Write Ahead Log and snapshots
+	  * supports asynchronous replication and hot standby
+	  * uses coroutines and asynchronous I/O to implement high-performance
+	    lock-free access to data
+	  * stored procedures in Lua are supported
+	This ebuild provides tarantool server.
+</longdescription>
+</pkgmetadata>

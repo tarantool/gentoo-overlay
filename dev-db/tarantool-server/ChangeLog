@@ -1,0 +1,8 @@
+# ChangeLog for dev-db/tarantool
+# Copyright 1999-2012 Gentoo Foundation; Distributed under the GPL v2
+# $Header: $
+
+*tarantool-1.4.9999 (15 May 2013)
+
+  15 May 2013; Roman Tsisyk <roman@tarantool.org> +tarantool-1.4.9999.ebuild:
+  Initial commit
