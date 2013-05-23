@@ -28,7 +28,7 @@
 	<flag name="gcov">Build with coverage support</flag>
 	<flag name="gprof">Build with profiling support</flag>
 	<flag name="libobjc-bundled">Use bundled version of libobjc</flag>
-	<flag name="luajit-bundled ">Use bundled version of luajit</flag>
+	<flag name="luajit-bundled">Use bundled version of luajit</flag>
 </use>
 <longdescription>
 	Tarantool is an in-memory database designed to store the most volatile
