@@ -33,5 +33,5 @@
 #--- END OF EXAMPLES ---
 
 # Roman Tsisyk <roman@tarantool.org> (15 May 2013)
-# Live ebuild for 1.5.x branch.
->=dev-db/tarantool-server-1.5
+# Live ebuild branch.
+>=dev-db/tarantool-9999
