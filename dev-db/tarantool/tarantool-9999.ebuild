@@ -106,7 +106,8 @@ src_install() {
 	dodoc README.md || die "dodoc failed"
 	dodoc AUTHORS || die "dodoc failed"
 	dodoc TODO || die "dodoc failed"
-	dodoc ${FILESDIR}/README.MultiInstance.md || die "dodoc failed"
+	dodoc ${FILESDIR}/README.Gentoo.md || die "dodoc failed"
+	newdoc ${FILESDIR}/tarantool.cfg example.cfg || die "dodoc failed"
 
 	# User guide
 	if use doc; then
@@ -119,11 +120,8 @@ src_install() {
 	insinto /etc/tarantool
 	doins ${FILESDIR}/tarantool.cfg || die "doins failed"
 
-	# Initial database
+	# Data directory
 	keepdir /var/lib/tarantool
-	insinto /var/lib/tarantool/tarantool
-	doins test/box/00000000000000000001.snap || die "doins failed"
-	fowners -R ${TARANTOOL_USER}:${TARANTOOL_GROUP} /var/lib/tarantool
 
 	# Directory for pid files
 	keepdir /run/tarantool
@@ -162,7 +160,7 @@ src_install() {
 pkg_postinst() {
 	einfo
 	einfo "It is possible to run multiple servers using init.d scrips."
-	einfo "Please check README.MultiInstance.md file"
+	einfo "Please check README.Gentoo.md file"
 	einfo "in /usr/share/doc/${PF} folder for additional information."
 	einfo
 }

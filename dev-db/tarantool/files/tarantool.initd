@@ -4,8 +4,9 @@
 
 # Author: Roman Tsisyk <roman@tarantool.org>
 
-extra_commands="configtest"
+extra_commands="configtest initstorage"
 description_configtest="Run syntax tests for configuration files."
+description_initstorage="Perform storage initialization."
 
 BOX=/usr/bin/tarantool_box
 USER=tarantool
@@ -23,8 +24,20 @@ depend() {
 }
 
 checkconfig() {
+	if [ ! -e ${CONFIG} ] ; then
+		eerror "You need to create ${CONFIG} first."
+		eerror "An example can be found in /usr/share/doc directory"
+		return 1
+	fi
 	checkpath -q -d -m 0755 -o ${USER}:${GROUP} /var/log/tarantool
 	${BOX} -c ${CONFIG} --check-config
+	SOCKETS=`grep \
+		'^[[:space:]]*\(opt[[:space:]]\+\)\?file_descriptors[[:space:]]*=[[:space:]]*[[:digit:]]\+' $CONFIG \
+		| tail -n 1 \
+		| sed 's/[^[:digit:]]//g'`
+	if [ -z ${SOCKETS} ]; then
+		SOCKETS=1023
+	fi
 }
 
 configtest() {
@@ -33,21 +46,37 @@ configtest() {
 	eend $?
 }
 
+initstorage() {
+	ebegin "Initializing storage"
+	install -d -o${USER} -g${GROUP} -m0750 ${RUNDIR}
+	cd ${RUNDIR}
+	start-stop-daemon --start --exec ${BOX} --pidfile "${PID}" \
+		-u ${USER}:${GROUP} -- -c "${CONFIG}" --init-storage -v
+	eend $? "Cannot initialize storage"
+}
+
 start_pre() {
 	checkconfig || return 1
+	if [ ! -d ${RUNDIR} ] ; then
+		initstorage
+	fi
 }
 
 start() {
+	if [ ${SOCKETS} -gt 1024  -a ${SOCKETS} -lt 65000 ]; then
+		einfo "Setting ulimit -n to ${SOCKETS}"
+		ulimit -n ${SOCKETS}
+	fi
 	ebegin "Starting ${SVCNAME}"
 	cd ${RUNDIR}
-	start-stop-daemon --start --exec ${BOX} --pidfile "${PID}" -u ${USER}:${GROUP} \
-		-- -c "${CONFIG}" --background
+	start-stop-daemon --start --exec ${BOX} --pidfile "${PID}" \
+		-u ${USER}:${GROUP} -- -c "${CONFIG}" --background
 	eend $?
 }
 
 stop() {
 	ebegin "Stopping ${SVCNAME}"
-	start-stop-daemon --stop --quiet \
+	start-stop-daemon --stop --quiet --retry 15 \
 		--exec ${BOX} --pidfile "${PID}"
 	eend $?
 }
