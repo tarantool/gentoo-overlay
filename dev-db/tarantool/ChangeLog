@@ -4,5 +4,8 @@
 
 *tarantool-1.4.9999 (15 May 2013)
 
+  23 May 2013; Roman Tsisyk <roman@tarantool.org> +tarantool-1.4.9999.ebuild:
+  Add "client" and "server" use flags
+
   15 May 2013; Roman Tsisyk <roman@tarantool.org> +tarantool-1.4.9999.ebuild:
   Initial commit
