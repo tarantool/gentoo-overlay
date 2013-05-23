@@ -2,8 +2,34 @@
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 <maintainer>
+	<name>Roman Tsisyk</name>
 	<email>roman@tarantool.org</email>
 </maintainer>
+<upstream>
+	<maintainer status="active">
+		<name>Konstantin Osipov</name>
+		<email>kostja@tarantool.org</email>
+	</maintainer>
+	
+	<changelog>https://github.com/mailru/tarantool/commits/master</changelog>
+	<doc lang="en">http://www.tarantool.org/</doc>
+	<bugs-to>https://bugs.launchpad.net/tarantool/</bugs-to>
+</upstream>
+<use>
+	<flag name="client">Build client applications and libraries</flag>
+	<flag name="server">Build the Tarantool server (tarantool_box)</flag>
+	<flag name="backtrace">Support for detail backtraces</flag>
+	<flag name="logrotate">Install logrotate.d file and scripts for rotating
+		logs</flag>
+	<flag name="walrotate">Install cron.d file and scripts for rotating
+		Tarantool's Write-Ahead log files</flag>
+	<flag name="sse2">Adds support for Streaming SIMD Extensions 2</flag>
+	<flag name="avx">Adds support for Advanced Vector Extensions</flag>
+	<flag name="gcov">Build with coverage support</flag>
+	<flag name="gprof">Build with profiling support</flag>
+	<flag name="libobjc-bundled">Use bundled version of libobjc</flag>
+	<flag name="luajit-bundled ">Use bundled version of luajit</flag>
+</use>
 <longdescription>
 	Tarantool is an in-memory database designed to store the most volatile
 	and highly accessible web content. Tarantool has been extensively used
