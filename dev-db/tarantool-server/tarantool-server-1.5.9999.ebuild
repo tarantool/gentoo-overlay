@@ -49,6 +49,10 @@ TARANTOOL_HOME="/var/lib/tarantool"
 TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
 
+src_prepare() {
+	epatch "${FILESDIR}/tarantool-1.4.x-scripts-paths.patch"
+}
+
 pkg_setup() {
 
 	ebegin "Creating tarantool user and group"
@@ -95,9 +99,6 @@ src_install() {
 	# Binary intsels
 	dobin ${BUILD_DIR}/src/box/tarantool_box || die "doexe failed"
 
-	# Logger
-	dobin "${FILESDIR}"/tarantool_logger
-
 	# Man page
 	doman ${BUILD_DIR}/doc/man/tarantool_box.1 || die "doman failed"
 
@@ -135,18 +136,26 @@ src_install() {
 	# Init script
 	newinitd "${FILESDIR}"/tarantool.initd tarantool
 
+	# Logger
+	exeinto /usr/$(get_libdir)/tarantool/
+	newexe extra/logger.pl tarantool_logger \
+			|| die "newexe failed"
+
 	# Logrotate scripts
 	if use logrotate; then
 		insinto /etc/logrotate.d
-		newins "${FILESDIR}"/tarantool.logrotate tarantool
-		dobin "${FILESDIR}/tarantool_logrotate"
+		newins "${FILESDIR}"/tarantool.logrotate tarantool \
+				|| die "newins failed"
+		exeinto /usr/$(get_libdir)/tarantool/
+		doexe debian/scripts/tarantool_logrotate \
+				|| die "newexe failed"
 	fi
 
 	# WAL-rotate scripts
 	if use walrotate; then
 		exeinto /etc/cron.daily
-		doexe "${FILESDIR}"/tarantool.cron
-		dobin "${FILESDIR}/tarantool_snapshot_rotate"
+		doexe "${FILESDIR}"/tarantool.cron || die "doexe failed"
+		dobin debian/scripts/tarantool_snapshot_rotate || die "doexe failed"
 	fi
 }
 
