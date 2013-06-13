@@ -4,7 +4,10 @@
 
 *tarantool-1.4.9999 (15 May 2013)
 
-  23 May 2013; Roman Tsisyk <roman@tarantool.org> +tarantool-1.4.9999.ebuild:
+  13 June 2013; Roman Tsisyk <roman@tarantool.org>+tarantool-9999.ebuild:
+  Split 1.4.9999 and 9999 ebuild and remove references to Objective C in 9999
+
+  23 May 2013; Roman Tsisyk <roman@tarantool.org> tarantool-9999.ebuild:
   Add "client" and "server" use flags
 
   15 May 2013; Roman Tsisyk <roman@tarantool.org> +tarantool-1.4.9999.ebuild:

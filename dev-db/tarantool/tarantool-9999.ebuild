@@ -11,19 +11,12 @@ CMAKE_IN_SOURCE_BUILD=1
 inherit cmake-utils eutils git-2
 
 EGIT_REPO_URI="git://github.com/mailru/tarantool.git"
-
-case ${PV} in
-	1.4.9999)
-		# Stable branch
-		EGIT_BRANCH="stable";;
-	default)
-		# Master branch
-		EGIT_BRANCH="master";;
-esac
+EGIT_HAS_SUBMODULES="1"
+EGIT_BRANCH="master"
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="http://tarantool.org"
-IUSE="debug +client +server static +backtrace +libobjc-bundled +luajit-bundled +logrotate +walrotate sse2 avx doc gcov gprof"
+IUSE="debug +client +server static +backtrace +luajit-bundled +logrotate +walrotate sse2 avx doc gcov gprof"
 
 SLOT="0"
 LICENSE="BSD-2"
@@ -38,7 +31,7 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
-	|| ( >=sys-devel/gcc-4.4[cxx,objc,objc+]  >=sys-devel/clang-3.1 )
+	|| ( >=sys-devel/gcc-4.5[cxx]  >=sys-devel/clang-3.1 )
 	test? ( dev-python/python-daemon dev-python/pyyaml dev-python/pexpect )
 	doc? ( app-text/jing www-client/lynx app-text/docbook-xml-dtd
 	       app-text/docbook-xsl-ns-stylesheets app-text/docbook-xsl-stylesheets )
@@ -75,7 +68,6 @@ src_configure() {
 	local mycmakeargs=(
 		$(cmake-utils_use_enable static STATIC)
 		$(cmake-utils_use_enable backtrace BACKTRACE)
-		$(cmake-utils_use_enable libobjc-bundled BUNDLED_LIBOBJC)
 		$(cmake-utils_use_enable luajit-bundled BUNDLED_LUAJIT)
 		$(cmake-utils_use_enable sse2 SSE2)
 		$(cmake-utils_use_enable avx AVX)
@@ -96,9 +88,6 @@ src_compile() {
 	fi
 	if use server; then
 		cmake-utils_src_compile tarantool_box
-		# Clear executable stack
-		# See https://bugs.launchpad.net/tarantool/+bug/1183352
-		execstack -c src/box/tarantool_box
 	fi
 	if use doc; then
 		cmake-utils_src_compile doc-autogen
