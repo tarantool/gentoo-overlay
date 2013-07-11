@@ -11,7 +11,7 @@
 		<email>kostja@tarantool.org</email>
 	</maintainer>
 	
-	<changelog>https://github.com/mailru/tarantool/commits/master</changelog>
+	<changelog>https://github.com/tarantool/tarantool/commits/master</changelog>
 	<doc lang="en">http://www.tarantool.org/</doc>
 	<bugs-to>https://bugs.launchpad.net/tarantool/</bugs-to>
 </upstream>
@@ -27,7 +27,8 @@
 	<flag name="avx">Adds support for Advanced Vector Extensions</flag>
 	<flag name="gcov">Build with coverage support</flag>
 	<flag name="gprof">Build with profiling support</flag>
-	<flag name="luajit-bundled">Use bundled version of luajit</flag>
+	<flag name="mysql">Build with box.net.sql(mysql) client</flag>
+	<flag name="postgres">Build with box.net.sql(pg) client</flag>
 </use>
 <longdescription>
 	Tarantool is an in-memory database designed to store the most volatile

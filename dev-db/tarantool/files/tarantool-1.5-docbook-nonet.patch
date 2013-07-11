@@ -1,0 +1,35 @@
+diff --git a/doc/developer/CMakeLists.txt b/doc/developer/CMakeLists.txt
+index d423839..6d2bd7b 100644
+--- a/doc/developer/CMakeLists.txt
++++ b/doc/developer/CMakeLists.txt
+@@ -11,7 +11,7 @@ add_custom_target(doc-check-dev ALL
+             ${CMAKE_SOURCE_DIR}/doc/developer/developer.xml)
+ 
+ add_custom_command(OUTPUT ${PATH_DEVGUIDE_HTML}
+-    COMMAND ${XSLTPROC} --nonet
++    COMMAND ${XSLTPROC}
+         --stringparam collect.xref.targets "all"
+         --xinclude -o ${PATH_DEVGUIDE_HTML}
+         ${CMAKE_SOURCE_DIR}/doc/user/tnt-html.xsl
+diff --git a/doc/user/CMakeLists.txt b/doc/user/CMakeLists.txt
+index 7773bda..7390c23 100644
+--- a/doc/user/CMakeLists.txt
++++ b/doc/user/CMakeLists.txt
+@@ -30,7 +30,7 @@ add_custom_target(doc-check ALL
+ # xsltproc-based documentation generation (default)
+ #
+ add_custom_command(OUTPUT ${PATH_USERGUIDE_HTML}
+-    COMMAND ${XSLTPROC} --nonet
++    COMMAND ${XSLTPROC}
+         --stringparam collect.xref.targets "all"
+         --xinclude -o ${PATH_USERGUIDE_HTML}
+         ${CMAKE_SOURCE_DIR}/doc/user/tnt-html.xsl
+@@ -50,7 +50,7 @@ install (FILES ${PATH_USERGUIDE_HTML}
+                ${PATH_USERGUIDE_TXT} DESTINATION share/doc/tarantool)
+ 
+ add_custom_target(pdf
+-    COMMAND ${XSLTPROC} --nonet
++    COMMAND ${XSLTPROC}
+         --stringparam collect.xref.targets "all"
+         --xinclude -o tarantool_user_guide.fo
+         ${CMAKE_SOURCE_DIR}/doc/user/tnt-fo.xsl

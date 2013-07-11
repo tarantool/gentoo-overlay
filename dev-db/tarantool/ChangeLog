@@ -4,6 +4,11 @@
 
 *tarantool-9999 (15 May 2013)
 
+  11 July 2013; Roman Tsisyk <roman@tarantool.org> tarantool-9999.ebuild:
+  Update ebuild for new 1.5.1 release.
+  Add USE=mysql and USE=postgres, remove USE="luajit-bundled".
+  Fix FEATURES="test", fix libunwind dependecy, fix docbook generation.
+
   13 June 2013; Roman Tsisyk <roman@tarantool.org> tarantool-9999.ebuild:
   Split 1.4.9999 and 9999 ebuilds and remove references to Objective C in 9999
 

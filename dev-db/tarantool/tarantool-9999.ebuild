@@ -5,18 +5,18 @@
 EAPI=4
 
 CMAKE_MIN_VERSION=2.6
-# See https://bugs.launchpad.net/tarantool/+bug/1180494
+# Required for USE="doc"
 CMAKE_IN_SOURCE_BUILD=1
 
 inherit cmake-utils eutils git-2
 
-EGIT_REPO_URI="git://github.com/mailru/tarantool.git"
+EGIT_REPO_URI="git://github.com/tarantool/tarantool.git"
 EGIT_HAS_SUBMODULES="1"
 EGIT_BRANCH="master"
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="http://tarantool.org"
-IUSE="debug +client +server static +backtrace +luajit-bundled +logrotate +walrotate sse2 avx doc gcov gprof"
+IUSE="debug +client +server static +backtrace +logrotate +walrotate sse2 avx doc gcov gprof mysql postgres"
 
 SLOT="0"
 LICENSE="BSD-2"
@@ -24,14 +24,15 @@ KEYWORDS="~x86 ~amd64"
 
 RDEPEND="
 	dev-lang/perl
-	!luajit-bundled? ( >=dev-lang/luajit-2.0 )
-	luajit-bundled? ( sys-libs/libunwind )
+	sys-libs/libunwind
 	client? ( sys-libs/readline sys-libs/ncurses )
+	mysql? ( virtual/mysql )
+	postgres? ( dev-db/postgresql-base )
 "
 
 DEPEND="
 	${RDEPEND}
-	|| ( >=sys-devel/gcc-4.5[cxx]  >=sys-devel/clang-3.1 )
+	|| ( >=sys-devel/gcc-4.5[cxx]  >=sys-devel/clang-3.2 )
 	test? ( dev-python/python-daemon dev-python/pyyaml dev-python/pexpect )
 	doc? ( app-text/jing www-client/lynx app-text/docbook-xml-dtd
 	       app-text/docbook-xsl-ns-stylesheets app-text/docbook-xsl-stylesheets )
@@ -47,7 +48,9 @@ TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
 
 src_prepare() {
-	epatch "${FILESDIR}/tarantool-1.4.x-scripts-paths.patch"
+	epatch "${FILESDIR}/tarantool-1.5-script-paths.patch"
+	epatch "${FILESDIR}/tarantool-1.5-tests.patch"
+	epatch "${FILESDIR}/tarantool-1.5-docbook-nonet.patch"
 }
 
 pkg_setup() {
@@ -68,12 +71,13 @@ src_configure() {
 	local mycmakeargs=(
 		$(cmake-utils_use_enable static STATIC)
 		$(cmake-utils_use_enable backtrace BACKTRACE)
-		$(cmake-utils_use_enable luajit-bundled BUNDLED_LUAJIT)
 		$(cmake-utils_use_enable sse2 SSE2)
 		$(cmake-utils_use_enable avx AVX)
 		$(cmake-utils_use_enable doc DOC)
 		$(cmake-utils_use_enable gcov GCOV)
 		$(cmake-utils_use_enable client CLIENT)
+		$(cmake-utils_use_with postgres POSTGRESQL)
+		$(cmake-utils_use_with mysql MYSQL)
 		-DCMAKE_SKIP_RPATH=YES
 	)
 	cmake-utils_src_configure
@@ -81,22 +85,33 @@ src_configure() {
 
 
 src_compile() {
-	if use client; then
-		# Run "make all" in required directores to support concurrent builds
-		cmake-utils_src_compile -C connector all
-		cmake-utils_src_compile -C client all
-	fi
-	if use server; then
-		cmake-utils_src_compile tarantool_box
+	if has test $FEATURES; then
+		# Compile server, client and unit tests if USE=test is set
+		cmake-utils_src_compile
+	else
+		if use client; then
+			# Compile client libraries and console client
+			cmake-utils_src_compile -C connector all
+			cmake-utils_src_compile -C client all
+		fi
+		if use server; then
+			# Compile server
+			cmake-utils_src_compile tarantool_box
+		fi
+		# Compile all man pages
+		cmake-utils_src_compile man
 	fi
 	if use doc; then
+		# Compile docbook documentation (haven't done by 'make all')
 		cmake-utils_src_compile doc-autogen
 	fi
-	cmake-utils_src_compile man
 }
 
 src_test() {
-	cmake-utils_src_compile test
+	if ! cmake-utils_src_compile test; then
+		hasq test $FEATURES && die "Make test failed. See above for details."
+		hasq test $FEATURES || eerror "Make test failed. See above for details."
+	fi
 }
 
 src_install() {
@@ -126,8 +141,8 @@ src_install() {
 		return 0
 	fi
 
-	# Server binary
-	dobin ${BUILD_DIR}/src/box/tarantool_box || die "doexe failed"
+	# Server binary and plugins
+	cmake-utils_src_install -C src
 
 	# Server man pages
 	doman ${BUILD_DIR}/doc/man/tarantool_box.1 || die "doman failed"
