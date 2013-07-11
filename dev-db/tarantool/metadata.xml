@@ -27,7 +27,6 @@
 	<flag name="avx">Adds support for Advanced Vector Extensions</flag>
 	<flag name="gcov">Build with coverage support</flag>
 	<flag name="gprof">Build with profiling support</flag>
-	<flag name="libobjc-bundled">Use bundled version of libobjc</flag>
 	<flag name="luajit-bundled">Use bundled version of luajit</flag>
 </use>
 <longdescription>

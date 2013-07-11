@@ -2,10 +2,10 @@
 # Copyright 1999-2012 Gentoo Foundation; Distributed under the GPL v2
 # $Header: $
 
-*tarantool-1.4.9999 (15 May 2013)
+*tarantool-9999 (15 May 2013)
 
-  13 June 2013; Roman Tsisyk <roman@tarantool.org>+tarantool-9999.ebuild:
-  Split 1.4.9999 and 9999 ebuild and remove references to Objective C in 9999
+  13 June 2013; Roman Tsisyk <roman@tarantool.org> tarantool-9999.ebuild:
+  Split 1.4.9999 and 9999 ebuilds and remove references to Objective C in 9999
 
   23 May 2013; Roman Tsisyk <roman@tarantool.org> tarantool-9999.ebuild:
   Add "client" and "server" use flags
