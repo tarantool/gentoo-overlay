@@ -8,11 +8,11 @@ CMAKE_MIN_VERSION=2.6
 # Required for USE="doc"
 CMAKE_IN_SOURCE_BUILD=1
 
-inherit cmake-utils eutils git-2
+inherit cmake-utils eutils user git-2
 
 EGIT_REPO_URI="git://github.com/tarantool/tarantool.git"
 EGIT_HAS_SUBMODULES="1"
-EGIT_BRANCH="master"
+EGIT_BRANCH="stable"
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="http://tarantool.org"
@@ -50,7 +50,8 @@ TARANTOOL_GROUP=tarantool
 src_prepare() {
 	epatch "${FILESDIR}/tarantool-1.5-script-paths.patch"
 	epatch "${FILESDIR}/tarantool-1.5-tests.patch"
-	epatch "${FILESDIR}/tarantool-1.5-docbook-nonet.patch"
+	rm -rf third_party/sophia
+	git submodule update --init
 }
 
 pkg_setup() {
@@ -158,12 +159,8 @@ src_install() {
 	# Data directory
 	keepdir /var/lib/tarantool
 
-	# Directory for pid files
-	keepdir /run/tarantool
-	fowners ${TARANTOOL_USER}:${TARANTOOL_GROUP} /run/tarantool
-
 	# Lua scrips
-	keepdir /usr/share/tarantool/lua
+	keepdir /usr/share/tarantool
 
 	# Init script
 	newinitd "${FILESDIR}"/tarantool.initd tarantool

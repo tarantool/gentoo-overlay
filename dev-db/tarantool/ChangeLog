@@ -4,6 +4,9 @@
 
 *tarantool-9999 (15 May 2013)
 
+  28 August 2014; Roman Tsisyk <roman@tarantool.org> tarantool-9999.ebuild
+  Rename to tarantool-1.5.9999.ebuild and test under latest upstream sources.
+
   11 July 2013; Roman Tsisyk <roman@tarantool.org> tarantool-9999.ebuild:
   Update ebuild for new 1.5.1 release.
   Add USE=mysql and USE=postgres, remove USE="luajit-bundled".

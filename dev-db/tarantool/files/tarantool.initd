@@ -60,6 +60,10 @@ start_pre() {
 	if [ ! -d ${RUNDIR} ] ; then
 		initstorage
 	fi
+	if [ ! -d /run/tarantool ]; then
+		mkdir -p /run/tarantool
+		chown ${USER}:${GROUP} /run/tarantool
+	fi
 }
 
 start() {

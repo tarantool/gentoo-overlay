@@ -8,10 +8,10 @@ CMAKE_MIN_VERSION=2.6
 # Required for USE="doc"
 CMAKE_IN_SOURCE_BUILD=1
 
-inherit cmake-utils eutils
+inherit cmake-utils eutils user
 
-UPSTREAM_VERSION=1.5.1-26-gbd426b7
-SRC_URI="http://tarantool.org/dist/tarantool-${UPSTREAM_VERSION}-src.tar.gz"
+UPSTREAM_VERSION=1.5.4-10-gb744e4a
+SRC_URI="http://tarantool.org/dist/stable/tarantool-${UPSTREAM_VERSION}-src.tar.gz"
 S=${WORKDIR}/tarantool-${UPSTREAM_VERSION}-src
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
@@ -50,7 +50,6 @@ TARANTOOL_GROUP=tarantool
 src_prepare() {
 	epatch "${FILESDIR}/tarantool-1.5-script-paths.patch"
 	epatch "${FILESDIR}/tarantool-1.5-tests.patch"
-	epatch "${FILESDIR}/tarantool-1.5-docbook-nonet.patch"
 }
 
 pkg_setup() {
@@ -158,12 +157,8 @@ src_install() {
 	# Data directory
 	keepdir /var/lib/tarantool
 
-	# Directory for pid files
-	keepdir /run/tarantool
-	fowners ${TARANTOOL_USER}:${TARANTOOL_GROUP} /run/tarantool
-
 	# Lua scrips
-	keepdir /usr/share/tarantool/lua
+	keepdir /usr/share/tarantool
 
 	# Init script
 	newinitd "${FILESDIR}"/tarantool.initd tarantool
