@@ -9,4 +9,6 @@ Tarantool is an efficient NoSQL database and a Lua application server.
 
     layman -S
     layman -a tarantool
-    ACCEPT_KEYWORDS="**" emerge tarantool -av
+    emerge --autounmask-write tarantool
+    etc-update
+    emerge -av tarentool
