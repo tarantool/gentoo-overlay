@@ -1,0 +1,58 @@
+#!/sbin/openrc-run
+# Copyright 1999-2016 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Id$
+
+extra_commands="configtest"
+extra_started_commands="reload"
+
+command="/usr/bin/tarantoolctl"
+
+depend() {
+	need net
+}
+
+start_pre() {
+	if [ "${RC_CMD}" != "restart" ]; then
+		configtest || return 1
+	fi
+}
+
+stop_pre() {
+	if [ "${RC_CMD}" = "restart" ]; then
+		configtest || return 1
+	fi
+}
+
+start() {
+	ebegin "Starting ${RC_SVCNAME}"
+
+	${command} start ${RC_SVCNAME}
+
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping ${RC_SVCNAME}"
+
+	${command} stop ${RC_SVCNAME}
+
+	eend $?
+}
+
+reload() {
+	configtest || return 1
+	ebegin "Refreshing tarantool configuration"
+
+	${command} reload ${RC_SVCNAME}
+
+	eend $? "Failed to reload tarantool"
+}
+
+configtest() {
+	ebegin "Checking tarantool configuration"
+
+	${command} check ${RC_SVCNAME}
+
+	eend $? "failed, please correct errors above"
+}

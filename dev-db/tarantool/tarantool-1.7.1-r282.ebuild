@@ -16,7 +16,7 @@ S="${WORKDIR}/tarantool-${PV}.${PR#r}"
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="http://tarantool.org"
-IUSE="debug static +backtrace +logrotate sse2 avx doc gcov gprof test"
+IUSE="debug +backtrace +logrotate systemd doc gcov gprof test cpu_flags_x86_sse2 cpu_flags_x86_avx"
 
 SLOT="0"
 LICENSE="BSD-2"
@@ -38,7 +38,7 @@ DEPEND="
 "
 
 REQUIRED_USE="
-	avx? ( sse2 )
+	cpu_flags_x86_avx? ( cpu_flags_x86_sse2 )
 "
 
 TARANTOOL_HOME="/var/lib/tarantool"
@@ -46,7 +46,7 @@ TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
 
 src_prepare() {
-	epatch "${FILESDIR}/tarantool-${MAJORV}-paths.patch"
+	epatch "${FILESDIR}/tarantool-${MAJORV}-clean.patch"
 
 	eapply_user
 }
@@ -67,14 +67,16 @@ src_configure() {
 	fi
 
 	local mycmakeargs=(
-		-DENABLE_STATIC="$(usex static)"
 		-DENABLE_BACKTRACE="$(usex backtrace)"
-		-DENABLE_SSE2="$(usex sse2)"
-		-DENABLE_AVX="$(usex avx)"
+		-DENABLE_SSE2="$(usex cpu_flags_x86_sse2)"
+		-DENABLE_AVX="$(usex cpu_flags_x86_avx)"
 		-DENABLE_DOC="$(usex doc)"
 		-DENABLE_GCOV="$(usex gcov)"
-		-DCMAKE_SKIP_RPATH=YES
+		-DWITH_SYSTEMD="$(usex systemd)"
+		-DCMAKE_SKIP_RPATH=ON
 		-DENABLE_DIST=ON
+		-DWITH_SYSVINIT=OFF
+		-DCMAKE_INSTALL_SYSCONFDIR=/etc
 	)
 	cmake-utils_src_configure
 }
@@ -92,28 +94,19 @@ src_test() {
 }
 
 src_install() {
-	# Basic docs
-	dodoc README.md
-	dodoc AUTHORS
-	dodoc TODO
-
 	# User guide
 	if use doc; then
-		dodoc doc/box-protocol.txt
-		dohtml ${BUILD_DIR}/doc/www-data/tarantool_user_guide.html
+		# Basic docs
+		dodoc README.md
+		dodoc AUTHORS
+		dodoc TODO
+
+		# Server documentation
+		dodoc ${FILESDIR}/README.Gentoo.md
 	fi
-
-	use doc && dodoc doc/sql.txt
-
 
 	# Server binary and plugins
 	cmake-utils_src_install
-
-	# Server man pages
-#	doman ${BUILD_DIR}/doc/man/tarantool.1
-
-	# Server documentation
-	dodoc ${FILESDIR}/README.Gentoo.md
 
 	# Data directory
 	keepdir /var/lib/tarantool
@@ -122,13 +115,13 @@ src_install() {
 	keepdir /usr/share/tarantool
 
 	# Init script
-	newinitd extra/dist/tarantoolctl tarantool
+	newinitd "${FILESDIR}/tarantool-${MAJORV}.initd" tarantool
 }
 
 pkg_postinst() {
 	einfo
 	einfo "It is possible to run multiple servers using init.d scrips."
-	einfo "Please check README.Gentoo.md file"
+	einfo "Please check README.Gentoo.md file (+doc required)"
 	einfo "in /usr/share/doc/${PF} folder for additional information."
 	einfo
 }
