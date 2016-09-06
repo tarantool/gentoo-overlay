@@ -1,5 +1,5 @@
---- extra/dist/CMakeLists.txt	2016-09-02 04:17:15.095494747 +0300
-+++ extra/dist/CMakeLists.txt	2016-09-05 19:07:59.217822437 +0300
+--- a/extra/dist/CMakeLists.txt	2016-09-02 04:17:15.095494747 +0300
++++ b/extra/dist/CMakeLists.txt	2016-09-05 19:07:59.217822437 +0300
 @@ -83,7 +83,6 @@
  # Sic: chmod and chown are performed by rpm/deb
  install(DIRECTORY DESTINATION ${TARANTOOL_DATADIR})
