@@ -1,88 +1,58 @@
-#!/sbin/runscript
-# Copyright 2013 Gentoo Foundation
+#!/sbin/openrc-run
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
+# $Id$
 
-# Author: Roman Tsisyk <roman@tarantool.org>
+extra_commands="configtest"
+extra_started_commands="reload"
 
-extra_commands="configtest initstorage"
-description_configtest="Run syntax tests for configuration files."
-description_initstorage="Perform storage initialization."
-
-BOX=/usr/bin/tarantool_box
-USER=tarantool
-GROUP=tarantool
-
-CONFIGDIR=${CONFIGDIR:-/etc/tarantool}
-INSTANCE=${SVCNAME#*.}
-PID="/run/tarantool/${INSTANCE}.pid"
-CONFIG="${CONFIGDIR}/${INSTANCE}.cfg"
-RUNDIR=/var/lib/tarantool/${INSTANCE}
+command="/usr/bin/tarantoolctl"
 
 depend() {
-	need localmount net
-	after bootmisc
-}
-
-checkconfig() {
-	if [ ! -e ${CONFIG} ] ; then
-		eerror "You need to create ${CONFIG} first."
-		eerror "An example can be found in /usr/share/doc directory"
-		return 1
-	fi
-	checkpath -q -d -m 0755 -o ${USER}:${GROUP} /var/log/tarantool
-	${BOX} -c ${CONFIG} --check-config
-	SOCKETS=`grep \
-		'^[[:space:]]*\(opt[[:space:]]\+\)\?file_descriptors[[:space:]]*=[[:space:]]*[[:digit:]]\+' $CONFIG \
-		| tail -n 1 \
-		| sed 's/[^[:digit:]]//g'`
-	if [ -z ${SOCKETS} ]; then
-		SOCKETS=1023
-	fi
-}
-
-configtest() {
-	ebegin "Checking ${SVCNAME} configuration"
-	checkconfig
-	eend $?
-}
-
-initstorage() {
-	ebegin "Initializing storage"
-	install -d -o${USER} -g${GROUP} -m0750 ${RUNDIR}
-	cd ${RUNDIR}
-	start-stop-daemon --start --exec ${BOX} --pidfile "${PID}" \
-		-u ${USER}:${GROUP} -- -c "${CONFIG}" --init-storage -v
-	eend $? "Cannot initialize storage"
+	need net
 }
 
 start_pre() {
-	checkconfig || return 1
-	if [ ! -d ${RUNDIR} ] ; then
-		initstorage
+	if [ "${RC_CMD}" != "restart" ]; then
+		configtest || return 1
 	fi
-	if [ ! -d /run/tarantool ]; then
-		mkdir -p /run/tarantool
-		chown ${USER}:${GROUP} /run/tarantool
+}
+
+stop_pre() {
+	if [ "${RC_CMD}" = "restart" ]; then
+		configtest || return 1
 	fi
 }
 
 start() {
-	if [ ${SOCKETS} -gt 1024  -a ${SOCKETS} -lt 65000 ]; then
-		einfo "Setting ulimit -n to ${SOCKETS}"
-		ulimit -n ${SOCKETS}
-	fi
-	ebegin "Starting ${SVCNAME}"
-	cd ${RUNDIR}
-	start-stop-daemon --start --exec ${BOX} --pidfile "${PID}" \
-		-u ${USER}:${GROUP} -- -c "${CONFIG}" --background
+	ebegin "Starting ${RC_SVCNAME}"
+
+	${command} start ${RC_SVCNAME}
+
 	eend $?
 }
 
 stop() {
-	ebegin "Stopping ${SVCNAME}"
-	start-stop-daemon --stop --quiet --retry 15 \
-		--exec ${BOX} --pidfile "${PID}"
+	ebegin "Stopping ${RC_SVCNAME}"
+
+	${command} stop ${RC_SVCNAME}
+
 	eend $?
 }
 
-# vim: set ts=4 :
+reload() {
+	configtest || return 1
+	ebegin "Refreshing tarantool configuration"
+
+	${command} reload ${RC_SVCNAME}
+
+	eend $? "Failed to reload tarantool"
+}
+
+configtest() {
+	ebegin "Checking tarantool configuration"
+
+	${command} check ${RC_SVCNAME}
+
+	eend $? "failed, please correct errors above"
+}
