@@ -17,11 +17,10 @@ IUSE="debug +backtrace systemd gcov gprof test cpu_flags_x86_sse2 cpu_flags_x86_
 
 SLOT="0/${MAJORV}"
 LICENSE="BSD-2"
-KEYWORDS="~x86 ~amd64"
+KEYWORDS="~x86 ~amd64 ~x64-macos"
 
 RDEPEND="
-	dev-lang/perl
-	sys-libs/libunwind
+	!x64-macos? ( sys-libs/libunwind )
 	sys-libs/readline:0
 	sys-libs/ncurses:0
 	dev-libs/libyaml
@@ -30,25 +29,43 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
+	dev-lang/perl
 	|| ( >=sys-devel/gcc-4.5[cxx]  >=sys-devel/clang-3.2 )
 	test? ( dev-python/python-daemon dev-python/pyyaml dev-python/pexpect )
 "
 
 REQUIRED_USE="
 	cpu_flags_x86_avx? ( cpu_flags_x86_sse2 )
+	x64-macos? ( !backtrace )
 "
 
 TARANTOOL_HOME="/var/lib/tarantool"
 TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
 
-PATCHES="${FILESDIR}/tarantool-${MAJORV}-clean.patch"
+#PATCHES="${FILESDIR}/tarantool-${MAJORV}-clean.patch"
+
+pkg_pretend() {
+	if [[ $(tc-getCC) == clang ]]; then
+		:
+	elif [[ $(gcc-major-version) -lt 4 ]] || {
+		[[ $(gcc-major-version) -eq 4 && $(gcc-minor-version) -lt 5 ]]; } then
+		 eerror "Compilation with gcc older than 4.5 is not supported"
+		 die "Too old gcc found."
+	fi
+}
 
 pkg_setup() {
 	ebegin "Creating tarantool user and group"
 	enewgroup ${TARANTOOL_GROUP}
 	enewuser ${TARANTOOL_USER} -1 -1 "${TARANTOOL_HOME}" ${TARANTOOL_GROUP}
 	eend $?
+}
+
+src_prepare() {
+	# Gentoo doesn't use rundir in that way, don't install it
+	sed -i '/^install(DIRECTORY DESTINATION ${TARANTOOL_RUNDIR})$/d' "${S}"/extra/dist/CMakeLists.txt
+	default
 }
 
 src_configure() {
@@ -67,19 +84,12 @@ src_configure() {
 		-DCMAKE_SKIP_RPATH=ON
 		-DENABLE_DIST=ON
 		-DWITH_SYSVINIT=OFF
-		-DCMAKE_INSTALL_SYSCONFDIR=/etc
+		-DCMAKE_INSTALL_SYSCONFDIR="${EROOT}"/etc
 		-DENABLE_BUNDLED_LIBYAML=OFF
 		-DENABLE_BUNDLED_LZ4=OFF
 	)
 	cmake-utils_src_configure
 }
-
-#src_test() {
-#	if ! cmake-utils_src_compile test; then
-#		hasq test $FEATURES && die "Make test failed. See above for details."
-#		hasq test $FEATURES || eerror "Make test failed. See above for details."
-#	fi
-#}
 
 src_install() {
 	# User guide
