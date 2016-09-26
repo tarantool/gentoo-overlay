@@ -46,6 +46,7 @@ TARANTOOL_GROUP=tarantool
 #PATCHES="${FILESDIR}/tarantool-${MAJORV}-clean.patch"
 
 pkg_pretend() {
+	# clang is not sloted at this moment, we are ok with any installed one.
 	if [[ $(tc-getCC) == clang ]]; then
 		:
 	elif [[ $(gcc-major-version) -lt 4 ]] || {
@@ -60,12 +61,6 @@ pkg_setup() {
 	enewgroup ${TARANTOOL_GROUP}
 	enewuser ${TARANTOOL_USER} -1 -1 "${TARANTOOL_HOME}" ${TARANTOOL_GROUP}
 	eend $?
-}
-
-src_prepare() {
-	# Gentoo doesn't use rundir in that way, don't install it
-	sed -i '/^install(DIRECTORY DESTINATION ${TARANTOOL_RUNDIR})$/d' "${S}"/extra/dist/CMakeLists.txt
-	default
 }
 
 src_configure() {
