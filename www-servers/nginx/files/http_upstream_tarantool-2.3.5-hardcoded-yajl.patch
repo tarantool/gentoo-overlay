@@ -1,0 +1,20 @@
+--- a/config	2017-04-06 13:42:32.593719289 +0300
++++ b/config	2017-04-06 15:52:35.974091383 +0300
+@@ -1,14 +1,12 @@
+ ngx_addon_name="ngx_http_tnt_module"
+ 
+-__lib_yajl="$ngx_addon_dir/third_party/yajl/build/yajl-2.1.0/lib/libyajl_s.a"
++__lib_yajl="-lyajl"
+ 
+ __module_src_dir="$ngx_addon_dir/src"
+ 
+ __include_paths=" \
+-          $ngx_addon_dir/src                                       \
+-          $ngx_addon_dir/third_party                               \
+-          $ngx_addon_dir/third_party/msgpuck                       \
+-          $ngx_addon_dir/third_party/yajl/build/yajl-2.1.0/include \
++          $ngx_addon_dir/third_party                \
++          $ngx_addon_dir/src                        \
+           "
+ 
+ __sources=" \
