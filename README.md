@@ -22,7 +22,6 @@ The `repos.conf` entry for repository sync may look like the following:
 Please note that if you use existing repository location, you *need to
 remove the existing repository first*.
 
-
 Using repository with layman
 ----------------------------
 
@@ -30,4 +29,4 @@ Using repository with layman
     layman -a tarantool
     emerge --autounmask-write tarantool
     etc-update
-    emerge -av tarentool
+    emerge -av tarantool
