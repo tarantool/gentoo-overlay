@@ -71,7 +71,7 @@ HTTP_UPSTREAM_CHECK_MODULE_URI="https://github.com/yaoweibin/nginx_upstream_chec
 HTTP_UPSTREAM_CHECK_MODULE_WD="${WORKDIR}/nginx_upstream_check_module-f3bdb7b85a194e2ad58e3c306c1d021ee76da2f5"
 
 # Tarantool
-HTTP_UPSTREAM_TARANTOOL_MODULE_PV="2.3.5-beta"
+HTTP_UPSTREAM_TARANTOOL_MODULE_PV="2.3.7"
 HTTP_UPSTREAM_TARANTOOL_MODULE_P="ngx_http_upstream_tarantool-${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}"
 HTTP_UPSTREAM_TARANTOOL_MODULE_URI="https://github.com/tarantool/nginx_upstream_module/archive/v${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}.tar.gz"
 HTTP_UPSTREAM_TARANTOOL_MODULE_UNPACK="${WORKDIR}/nginx_upstream_module-${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}"
@@ -364,7 +364,7 @@ src_prepare() {
 
 	if use nginx_modules_http_upstream_tarantool; then
 		cd "${HTTP_UPSTREAM_TARANTOOL_MODULE_WD}" || die
-		eapply "${FILESDIR}"/http_upstream_tarantool-2.3.5-hardcoded-yajl.patch
+		eapply "${FILESDIR}"/http_upstream_tarantool-"${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}"-hardcoded-libs.patch
 		cd "${S}" || die
 	fi
 
@@ -807,6 +807,19 @@ pkg_postinst() {
 	if use nginx_modules_http_lua && use http2; then
 		ewarn "Lua 3rd party module author warns against using ${P} with"
 		ewarn "NGINX_MODULES_HTTP=\"lua http2\". For more info, see http://git.io/OldLsg"
+	fi
+
+	if use nginx_modules_http_upstream_tarantool; then
+		ewarn
+		ewarn 'In order to work with Tarantool using http_upstream_tarantool'
+		ewarn 'module add the "load_module" directive in the top-level context'
+		ewarn 'of your "nginx.conf" configuration file:'
+		ewarn
+		ewarn 'load_module "modules/ngx_http_tnt_module.so";'
+		ewarn
+		ewarn 'https://www.nginx.com/blog/compiling-dynamic-modules-nginx-plus/'
+		ewarn 'https://github.com/tarantool/gentoo-overlay/issues/11'
+		ewarn
 	fi
 
 	local _n_permission_layout_checks=0
