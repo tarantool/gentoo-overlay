@@ -20,5 +20,5 @@ fi
 RESTRICT="mirror"
 
 LICENSE="BSD-2"
-SLOT="0"
+SLOT="2"
 IUSE=""

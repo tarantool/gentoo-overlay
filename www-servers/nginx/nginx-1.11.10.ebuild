@@ -282,7 +282,7 @@ CDEPEND="
 	nginx_modules_http_lua? ( !luajit? ( dev-lang/lua:0= ) luajit? ( dev-lang/luajit:2= ) )
 	nginx_modules_http_auth_pam? ( virtual/pam )
 	nginx_modules_http_upstream_tarantool? (
-		dev-libs/msgpuck:=
+		dev-libs/msgpuck:2=
 		dev-libs/yajl:=
 	)
 	nginx_modules_http_metrics? ( dev-libs/yajl:= )
