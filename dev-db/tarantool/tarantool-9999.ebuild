@@ -110,6 +110,7 @@ src_install() {
 
 	# Data directory
 	keepdir /var/lib/tarantool
+	fowners "${TARANTOOL_USER}:${TARANTOOL_GROUP}" /var/log/tarantool
 
 	# Lua scrips
 	keepdir /usr/share/tarantool
