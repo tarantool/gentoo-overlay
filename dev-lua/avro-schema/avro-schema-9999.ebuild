@@ -7,7 +7,7 @@ case $PV in *9999*) VCS_ECLASS="git-r3" ;; *) VCS_ECLASS="" ;; esac
 
 inherit cmake-utils ${VCS_ECLASS}
 
-DESCRIPTION="Apache Avro schema tools for Tarantool "
+DESCRIPTION="Apache Avro schema tools for Tarantool"
 HOMEPAGE="https://github.com/tarantool/avro-schema/"
 
 if [ -n "${VCS_ECLASS}" ]; then
