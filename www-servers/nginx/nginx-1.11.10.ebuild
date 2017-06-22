@@ -71,7 +71,7 @@ HTTP_UPSTREAM_CHECK_MODULE_URI="https://github.com/yaoweibin/nginx_upstream_chec
 HTTP_UPSTREAM_CHECK_MODULE_WD="${WORKDIR}/nginx_upstream_check_module-f3bdb7b85a194e2ad58e3c306c1d021ee76da2f5"
 
 # Tarantool
-HTTP_UPSTREAM_TARANTOOL_MODULE_PV="2.3.7"
+HTTP_UPSTREAM_TARANTOOL_MODULE_PV="2.4.2-beta"
 HTTP_UPSTREAM_TARANTOOL_MODULE_P="ngx_http_upstream_tarantool-${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}"
 HTTP_UPSTREAM_TARANTOOL_MODULE_URI="https://github.com/tarantool/nginx_upstream_module/archive/v${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}.tar.gz"
 HTTP_UPSTREAM_TARANTOOL_MODULE_UNPACK="${WORKDIR}/nginx_upstream_module-${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}"
