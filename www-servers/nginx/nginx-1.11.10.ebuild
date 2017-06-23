@@ -817,6 +817,10 @@ pkg_postinst() {
 		ewarn
 		ewarn 'load_module "modules/ngx_http_tnt_module.so";'
 		ewarn
+		ewarn 'In case you intend to use `tnt_eval` add also the following:'
+		ewarn
+		ewarn 'load_module "modules/ngx_http_tnt_eval_module.so";'
+		ewarn
 		ewarn 'https://www.nginx.com/blog/compiling-dynamic-modules-nginx-plus/'
 		ewarn 'https://github.com/tarantool/gentoo-overlay/issues/11'
 		ewarn
