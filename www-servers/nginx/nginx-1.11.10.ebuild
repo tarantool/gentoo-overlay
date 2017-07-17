@@ -71,7 +71,7 @@ HTTP_UPSTREAM_CHECK_MODULE_URI="https://github.com/yaoweibin/nginx_upstream_chec
 HTTP_UPSTREAM_CHECK_MODULE_WD="${WORKDIR}/nginx_upstream_check_module-f3bdb7b85a194e2ad58e3c306c1d021ee76da2f5"
 
 # Tarantool
-HTTP_UPSTREAM_TARANTOOL_MODULE_PV="2.4.5-beta"
+HTTP_UPSTREAM_TARANTOOL_MODULE_PV="2.4.6-rc1"
 HTTP_UPSTREAM_TARANTOOL_MODULE_P="ngx_http_upstream_tarantool-${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}"
 HTTP_UPSTREAM_TARANTOOL_MODULE_URI="https://github.com/tarantool/nginx_upstream_module/archive/v${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}.tar.gz"
 HTTP_UPSTREAM_TARANTOOL_MODULE_UNPACK="${WORKDIR}/nginx_upstream_module-${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}"
@@ -360,12 +360,6 @@ src_prepare() {
 	if use nginx_modules_http_upstream_check; then
 		#eapply -p0 "${HTTP_UPSTREAM_CHECK_MODULE_WD}"/check_1.11.1+.patch
 		eapply -p0 "${FILESDIR}"/http_upstream_check-nginx-1.11.5+.patch
-	fi
-
-	if use nginx_modules_http_upstream_tarantool; then
-		cd "${HTTP_UPSTREAM_TARANTOOL_MODULE_WD}" || die
-		eapply "${FILESDIR}"/http_upstream_tarantool-"${HTTP_UPSTREAM_TARANTOOL_MODULE_PV}"-hardcoded-libs.patch
-		cd "${S}" || die
 	fi
 
 	if use nginx_modules_http_lua; then
