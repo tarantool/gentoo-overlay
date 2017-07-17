@@ -1,7 +1,7 @@
 # Copyright 1999-2017 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI="6"
 
 # Maintainer notes:
 # - http_rewrite-independent pcre-support makes sense for matching locations without an actual rewrite
@@ -53,7 +53,7 @@ HTTP_FANCYINDEX_MODULE_URI="https://github.com/aperezdc/ngx-fancyindex/archive/v
 HTTP_FANCYINDEX_MODULE_WD="${WORKDIR}/ngx-fancyindex-${HTTP_FANCYINDEX_MODULE_PV}"
 
 # http_lua (https://github.com/openresty/lua-nginx-module, BSD license)
-HTTP_LUA_MODULE_PV="0.10.7"
+HTTP_LUA_MODULE_PV="0.10.8"
 HTTP_LUA_MODULE_P="ngx_http_lua-${HTTP_LUA_MODULE_PV}"
 HTTP_LUA_MODULE_URI="https://github.com/openresty/lua-nginx-module/archive/v${HTTP_LUA_MODULE_PV}.tar.gz"
 HTTP_LUA_MODULE_WD="${WORKDIR}/lua-nginx-module-${HTTP_LUA_MODULE_PV}"
@@ -90,7 +90,7 @@ HTTP_NAXSI_MODULE_URI="https://github.com/nbs-system/naxsi/archive/${HTTP_NAXSI_
 HTTP_NAXSI_MODULE_WD="${WORKDIR}/naxsi-${HTTP_NAXSI_MODULE_PV}/naxsi_src"
 
 # nginx-rtmp-module (https://github.com/arut/nginx-rtmp-module, BSD license)
-RTMP_MODULE_PV="1.1.10"
+RTMP_MODULE_PV="1.2.0"
 RTMP_MODULE_P="ngx_rtmp-${RTMP_MODULE_PV}"
 RTMP_MODULE_URI="https://github.com/arut/nginx-rtmp-module/archive/v${RTMP_MODULE_PV}.tar.gz"
 RTMP_MODULE_WD="${WORKDIR}/nginx-rtmp-module-${RTMP_MODULE_PV}"
@@ -133,7 +133,7 @@ HTTP_MOGILEFS_MODULE_URI="https://github.com/vkholodkov/nginx-mogilefs-module/ar
 HTTP_MOGILEFS_MODULE_WD="${WORKDIR}/nginx_mogilefs_module-${HTTP_MOGILEFS_MODULE_PV}"
 
 # memc-module (https://github.com/openresty/memc-nginx-module, BSD-2)
-HTTP_MEMC_MODULE_PV="0.17"
+HTTP_MEMC_MODULE_PV="0.18"
 HTTP_MEMC_MODULE_P="ngx_memc_module-${HTTP_MEMC_MODULE_PV}"
 HTTP_MEMC_MODULE_URI="https://github.com/openresty/memc-nginx-module/archive/v${HTTP_MEMC_MODULE_PV}.tar.gz"
 HTTP_MEMC_MODULE_WD="${WORKDIR}/memc-nginx-module-${HTTP_MEMC_MODULE_PV}"
@@ -357,12 +357,21 @@ src_prepare() {
 	eapply "${FILESDIR}/${PN}-1.4.1-fix-perl-install-path.patch"
 	eapply "${FILESDIR}/${PN}-httpoxy-mitigation-r1.patch"
 
+	if use nginx_modules_http_echo; then
+		cd "${HTTP_ECHO_MODULE_WD}" || die
+		eapply "${FILESDIR}"/http_echo-nginx-1.11.11+.patch
+		cd "${S}" || die
+	fi
+
 	if use nginx_modules_http_upstream_check; then
 		#eapply -p0 "${HTTP_UPSTREAM_CHECK_MODULE_WD}"/check_1.11.1+.patch
 		eapply -p0 "${FILESDIR}"/http_upstream_check-nginx-1.11.5+.patch
 	fi
 
 	if use nginx_modules_http_lua; then
+		cd "${HTTP_LUA_MODULE_WD}" || die
+		eapply -p1 "${FILESDIR}"/http_lua_nginx-1.11.11+-r1.patch
+		cd "${S}" || die
 		sed -i -e 's/-llua5.1/-llua/' "${HTTP_LUA_MODULE_WD}/config" || die
 	fi
 
@@ -370,6 +379,7 @@ src_prepare() {
 		cd "${HTTP_SECURITY_MODULE_WD}" || die
 
 		eapply "${FILESDIR}"/http_security-pr_1158.patch
+		eapply "${FILESDIR}"/http_security-pr_1373.patch
 
 		eautoreconf
 
@@ -385,12 +395,6 @@ src_prepare() {
 	if use nginx_modules_http_upload_progress; then
 		cd "${HTTP_UPLOAD_PROGRESS_MODULE_WD}" || die
 		eapply "${FILESDIR}"/http_uploadprogress-issue_50-r1.patch
-		cd "${S}" || die
-	fi
-
-	if use nginx_modules_http_memc; then
-		cd "${HTTP_MEMC_MODULE_WD}" || die
-		eapply "${FILESDIR}"/http_memc-0.17-issue_26.patch
 		cd "${S}" || die
 	fi
 
@@ -794,11 +798,21 @@ pkg_postinst() {
 	fi
 
 	if use nginx_modules_http_spdy; then
+		ewarn ""
 		ewarn "In nginx 1.9.5 the spdy module was superseded by http2."
 		ewarn "Update your configs and package.use accordingly."
 	fi
 
+	if use nginx_modules_http_lua; then
+		ewarn ""
+		ewarn "While you can build lua 3rd party module against ${P}"
+		ewarn "the author warns that >=${PN}-1.11.11 is still not an"
+		ewarn "officially supported target yet. You are on your own."
+		ewarn "Expect runtime failures, memory leaks and other problems!"
+	fi
+
 	if use nginx_modules_http_lua && use http2; then
+		ewarn ""
 		ewarn "Lua 3rd party module author warns against using ${P} with"
 		ewarn "NGINX_MODULES_HTTP=\"lua http2\". For more info, see http://git.io/OldLsg"
 	fi
@@ -810,10 +824,6 @@ pkg_postinst() {
 		ewarn 'of your "nginx.conf" configuration file:'
 		ewarn
 		ewarn 'load_module "modules/ngx_http_tnt_module.so";'
-		ewarn
-		ewarn 'In case you intend to use `tnt_eval` add also the following:'
-		ewarn
-		ewarn 'load_module "modules/ngx_http_tnt_eval_module.so";'
 		ewarn
 		ewarn 'https://www.nginx.com/blog/compiling-dynamic-modules-nginx-plus/'
 		ewarn 'https://github.com/tarantool/gentoo-overlay/issues/11'
