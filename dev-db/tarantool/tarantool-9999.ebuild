@@ -102,9 +102,6 @@ src_install() {
 	dodoc AUTHORS
 	dodoc TODO
 
-	# Server documentation
-	dodoc "${FILESDIR}"/README.Gentoo.md
-
 	# Server binary and plugins
 	cmake-utils_src_install
 
@@ -120,9 +117,18 @@ src_install() {
 }
 
 pkg_postinst() {
-	einfo
-	einfo "It is possible to run multiple servers using init.d scrips."
-	einfo "Please check README.Gentoo.md file"
-	einfo "in /usr/share/doc/${PF} folder for additional information."
-	einfo
+	elog
+	elog "It is possible to run multiple servers using init.d scrips. Consider"
+	elog "the following example:"
+	elog
+	elog "Create a service:"
+	elog "$ vim /etc/tarantool/instances.available/tarantool-myservice.lua"
+	elog
+	elog "OpenRC:"
+	elog "$ ln -s /etc/init.d/tarantool /etc/init.d/tarantool.myservice"
+	elog "$ service tarantool-myservice start"
+	elog
+	elog "Systemd:"
+	elog "$ service tarantool@p2phub start"
+	elog
 }
