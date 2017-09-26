@@ -105,6 +105,10 @@ src_install() {
 	# Server binary and plugins
 	cmake-utils_src_install
 
+	# Run directory
+	keepdir /var/run/tarantool
+	fowners "${TARANTOOL_USER}:${TARANTOOL_GROUP}" /var/run/tarantool
+
 	# Data directory
 	keepdir /var/lib/tarantool
 	fowners "${TARANTOOL_USER}:${TARANTOOL_GROUP}" /var/log/tarantool
