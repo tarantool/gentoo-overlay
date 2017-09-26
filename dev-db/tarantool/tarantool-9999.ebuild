@@ -14,7 +14,7 @@ MAJORV=$(get_version_component_range 1-2)
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="http://tarantool.org"
-IUSE="debug +backtrace systemd gcov gprof test cpu_flags_x86_sse2 cpu_flags_x86_avx"
+IUSE="debug +backtrace systemd gcov gprof test system-zstd cpu_flags_x86_sse2 cpu_flags_x86_avx"
 
 if [ -n "${VCS_ECLASS}" ]; then
 	KEYWORDS=""
@@ -35,6 +35,7 @@ RDEPEND="
 	sys-libs/ncurses:0
 	dev-libs/libyaml
 	app-arch/lz4
+	system-zstd? ( app-arch/zstd )
 "
 
 DEPEND="
@@ -92,6 +93,7 @@ src_configure() {
 		-DCMAKE_INSTALL_SYSCONFDIR="$(readlink -f ${EROOT}/etc)"
 		-DENABLE_BUNDLED_LIBYAML=OFF
 		-DENABLE_BUNDLED_LZ4=OFF
+		-DENABLE_BUNDLED_ZSTD="$(usex system-zstd OFF ON)"
 	)
 	cmake-utils_src_configure
 }
