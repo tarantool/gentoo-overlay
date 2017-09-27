@@ -34,7 +34,6 @@ RDEPEND="
 	sys-libs/readline:0
 	sys-libs/ncurses:0
 	dev-libs/libyaml
-	app-arch/lz4
 	system-zstd? ( app-arch/zstd )
 "
 
@@ -92,7 +91,6 @@ src_configure() {
 		-DWITH_SYSVINIT=OFF
 		-DCMAKE_INSTALL_SYSCONFDIR="$(readlink -f ${EROOT}/etc)"
 		-DENABLE_BUNDLED_LIBYAML=OFF
-		-DENABLE_BUNDLED_LZ4=OFF
 		-DENABLE_BUNDLED_ZSTD="$(usex system-zstd OFF ON)"
 	)
 	cmake-utils_src_configure
