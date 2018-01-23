@@ -35,6 +35,7 @@ RDEPEND="
 	sys-libs/ncurses:0
 	dev-libs/libyaml
 	system-zstd? ( app-arch/zstd )
+	dev-libs/icu
 "
 
 DEPEND="
