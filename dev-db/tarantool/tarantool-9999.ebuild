@@ -85,7 +85,7 @@ src_configure() {
 	if use debug; then
 		export CMAKE_BUILD_TYPE=Debug
 	else
-		export CMAKE_BUILD_TYPE=RelWithDebugInfo
+		export CMAKE_BUILD_TYPE=RelWithDebInfo
 	fi
 
 	local mycmakeargs=(
