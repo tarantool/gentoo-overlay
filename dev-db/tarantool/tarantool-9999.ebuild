@@ -14,7 +14,7 @@ MAJORV=$(get_version_component_range 1-2)
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="http://tarantool.org"
-IUSE="debug +backtrace systemd gcov gprof test system-zstd cpu_flags_x86_sse2 cpu_flags_x86_avx"
+IUSE="+backtrace debug feedback-daemon gcov gprof system-zstd systemd test cpu_flags_x86_sse2 cpu_flags_x86_avx"
 
 if [ -n "${VCS_ECLASS}" ]; then
 	KEYWORDS=""
@@ -77,6 +77,27 @@ pkg_setup() {
 src_prepare() {
 	if [[ ${PVR} =~ 1\.7\.[56].* || ${PVR} =~ 1\.8\.2.* ]]; then
 		epatch "${FILESDIR}/tarantool-1.7.5-march-native.patch"
+	fi
+	if ! use feedback-daemon && (
+			([[ ${PV} =~ 1.* ]] && version_is_at_least 1.10.0.28) || \
+			([[ ${PV} =~ 2.* ]] && version_is_at_least 2.0.4.163) || \
+			[[ ${PV} == 9999 ]]); then
+		# revert 2ae373ae741dcf975c5d176316d8290c962446ba in more or less
+		# robust way; until [1] is not fixed
+		# [1]: https://github.com/tarantool/tarantool/issues/3308
+		local comment='disabled by USE=-feedback-daemon'
+		sed -e 's@^lua_source(lua_sources lua/feedback_daemon\.lua)$@# \0 # '"${comment}@" \
+			-i src/box/CMakeLists.txt || die "sed feedback-daemon 1"
+		sed -e 's@^\s*feedback_daemon_lua\[\],$@// \0 // '"${comment}@" \
+			-e 's@^\s*"box/feedback_daemon", feedback_daemon_lua,@// \0 // '"${comment}@" \
+			-i src/box/lua/init.c || die "sed feedback-daemon 2"
+		sed -e 's@^\s*feedback_enabled *=.*$@-- \0 -- '"${comment}@" \
+			-e 's@^\s*feedback_host *=.*$@-- \0 -- '"${comment}@" \
+			-e 's@^\s*feedback_interval *=.*$@-- \0 -- '"${comment}@" \
+			-i src/box/lua/load_cfg.lua || die "sed feedback-daemon 3"
+		echo 'box.feedback = nil' >> src/box/lua/schema.lua \
+			|| die "echo box.feedback"
+		rm src/box/lua/feedback_daemon.lua || die "rm feedback_daemon.lua"
 	fi
 	default
 }
@@ -142,5 +163,16 @@ pkg_postinst() {
 	elog
 	elog "Systemd:"
 	elog "$ service tarantool@p2phub start"
+	elog
+	if use feedback-daemon; then
+		elog "You have feedback-daemon USE flag enabled."
+		elog "This enables sending information about long-running (> 1 hour)"
+		elog "instances to [1] by default. See [2] for more information, "
+		elog "especially [3]."
+		elog
+		elog "[1]: https://feedback.tarantool.io"
+		elog "[2]: https://github.com/tarantool/tarantool/commit/2ae373ae741dcf975c5d176316d8290c962446ba"
+		elog "[3]: https://github.com/tarantool/tarantool/commit/2ae373ae741dcf975c5d176316d8290c962446ba#diff-82b4b8a83aa989c9defd5b9fb1a13999R28"
+	fi
 	elog
 }
