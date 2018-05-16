@@ -75,9 +75,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	if [[ ${PVR} =~ 1\.7\.[56].* || ${PVR} =~ 1\.8\.2.* ]]; then
-		epatch "${FILESDIR}/tarantool-1.7.5-march-native.patch"
-	fi
 	if ! use feedback-daemon && (
 			([[ ${PV} =~ 1.* ]] && version_is_at_least 1.10.0.28) || \
 			([[ ${PV} =~ 2.* ]] && version_is_at_least 2.0.4.163) || \
