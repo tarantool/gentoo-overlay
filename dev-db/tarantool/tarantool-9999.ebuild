@@ -10,7 +10,23 @@ case $PV in *9999*) VCS_ECLASS="git-r3" ;; *) VCS_ECLASS="" ;; esac
 
 inherit cmake-utils eutils user versionator ${VCS_ECLASS}
 
-MAJORV=$(get_version_component_range 1-2)
+# Major versions: 1, 2.
+MAJORV=$(get_version_component_range 1)
+# Minor versions: 0 (alpha), 1 (beta), 2-9 (stable), 10 (LTS).
+MINORV=$(get_version_component_range 2)
+# Buckets: 1.9, 1.10, 2x (alpha and beta), 2.[2-9] (stable), 2.10 (LTS).
+case $MINORV in
+[01])
+	# Alpha and beta.
+	BUCKET="${MAJORV}x"
+	;;
+*)
+	# Stable and LTS.
+	BUCKET="${MAJORV}.${MINORV}"
+	;;
+esac
+# Releases: 1.9, 1.10, 2.0, 2.1.
+RELEASE=$(get_version_component_range 1-2)
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="http://tarantool.org"
@@ -21,11 +37,11 @@ if [ -n "${VCS_ECLASS}" ]; then
 	EGIT_REPO_URI="https://github.com/tarantool/$PN"
 else
 	KEYWORDS="~amd64 ~x86"
-	SRC_URI="http://download.tarantool.org/tarantool/${MAJORV}/src/${P}.tar.gz"
+	SRC_URI="http://download.tarantool.org/tarantool/${BUCKET}/src/${P}.tar.gz"
 fi
 RESTRICT="mirror"
 
-SLOT="0/${MAJORV}"
+SLOT="0/${RELEASE}"
 LICENSE="BSD-2"
 KEYWORDS="~x86 ~amd64 ~x64-macos"
 
@@ -53,8 +69,6 @@ REQUIRED_USE="
 TARANTOOL_HOME="/var/lib/tarantool"
 TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
-
-#PATCHES="${FILESDIR}/tarantool-${MAJORV}-clean.patch"
 
 pkg_pretend() {
 	# clang is not sloted at this moment, we are ok with any installed one.
