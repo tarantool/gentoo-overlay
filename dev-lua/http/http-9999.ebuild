@@ -12,7 +12,6 @@ HOMEPAGE="https://github.com/tarantool/http/"
 
 if [ -n "${VCS_ECLASS}" ]; then
 	KEYWORDS=""
-	EGIT_BRANCH="tarantool-1.7"
 	EGIT_REPO_URI="https://github.com/tarantool/http"
 else
 	KEYWORDS="~amd64 ~x86"
