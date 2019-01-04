@@ -169,11 +169,11 @@ pkg_postinst() {
 	elog "$ vim /etc/tarantool/instances.available/tarantool-myservice.lua"
 	elog
 	elog "OpenRC:"
-	elog "$ ln -s /etc/init.d/tarantool /etc/init.d/tarantool.myservice"
-	elog "$ service tarantool-myservice start"
+	elog "$ ln -s /etc/init.d/tarantool /etc/init.d/tarantool-myservice"
+	elog "$ rc-service tarantool-myservice start"
 	elog
 	elog "Systemd:"
-	elog "$ service tarantool@p2phub start"
+	elog "$ service tarantool@myservice start"
 	elog
 	if use feedback-daemon; then
 		elog "You have feedback-daemon USE flag enabled."
