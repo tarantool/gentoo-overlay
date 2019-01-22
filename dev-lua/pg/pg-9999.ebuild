@@ -21,7 +21,6 @@ RESTRICT="mirror"
 
 LICENSE=""
 SLOT="0"
-KEYWORDS=""
 IUSE=""
 
 DEPEND="
