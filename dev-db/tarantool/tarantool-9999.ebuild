@@ -30,7 +30,11 @@ RELEASE=$(get_version_component_range 1-2)
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="http://tarantool.org"
-IUSE="+backtrace debug feedback-daemon gcov gprof system-zstd systemd test cpu_flags_x86_sse2 cpu_flags_x86_avx"
+IUSE="
+	+backtrace debug feedback-daemon gcov gprof +system-libcurl
+	+system-libyaml +system-zstd systemd test cpu_flags_x86_sse2
+	cpu_flags_x86_avx
+"
 
 if [ -n "${VCS_ECLASS}" ]; then
 	KEYWORDS=""
@@ -50,13 +54,14 @@ RDEPEND="
 	sys-libs/readline:0
 	sys-libs/ncurses:0
 	dev-libs/libyaml
+	system-libcurl? ( >=net-misc/curl-7.65.3 )
+	system-libyaml? ( >=dev-libs/libyaml-0.2.2 )
 	system-zstd? ( app-arch/zstd )
 	dev-libs/icu
 "
 
 DEPEND="
 	${RDEPEND}
-	dev-lang/perl
 	|| ( >=sys-devel/gcc-4.5[cxx]  >=sys-devel/clang-3.2 )
 	test? ( dev-python/python-daemon dev-python/pyyaml dev-python/pexpect )
 "
@@ -79,6 +84,17 @@ pkg_pretend() {
 		 eerror "Compilation with gcc older than 4.5 is not supported"
 		 die "Too old gcc found."
 	fi
+
+	if ! use system-libcurl && ! ( \
+			([[ ${PV} =~ ^1.* ]] && version_is_at_least 1.10.3.120) || \
+			([[ ${PV} =~ ^2.1.* ]] && version_is_at_least 2.1.2.155) || \
+			([[ ${PV} =~ ^2.2.* ]] && version_is_at_least 2.2.1.19) || \
+			([[ ${PV} =~ ^2.3.* ]] && version_is_at_least 2.3.0.42) || \
+			[[ ${PV} == 9999 ]]); then
+		eerror "USE flag \"system-libcurl\" is disabled, but ${PF} version"
+		eerror "is older then needed for using bundled libcurl."
+		die "Cannot enable system libcurl."
+	fi
 }
 
 pkg_setup() {
@@ -89,9 +105,9 @@ pkg_setup() {
 }
 
 src_prepare() {
-	if ! use feedback-daemon && (
-			([[ ${PV} =~ 1.* ]] && version_is_at_least 1.10.0.28) || \
-			([[ ${PV} =~ 2.* ]] && version_is_at_least 2.0.4.163) || \
+	if ! use feedback-daemon && ( \
+			([[ ${PV} =~ ^1.* ]] && version_is_at_least 1.10.0.28) || \
+			([[ ${PV} =~ ^2.* ]] && version_is_at_least 2.0.4.163) || \
 			[[ ${PV} == 9999 ]]); then
 		# revert 2ae373ae741dcf975c5d176316d8290c962446ba in more or less
 		# robust way; until [1] is not fixed
@@ -130,7 +146,8 @@ src_configure() {
 		-DENABLE_DIST=ON
 		-DWITH_SYSVINIT=OFF
 		-DCMAKE_INSTALL_SYSCONFDIR="$(readlink -f ${EROOT}/etc)"
-		-DENABLE_BUNDLED_LIBYAML=OFF
+		-DENABLE_BUNDLED_LIBCURL=$(usex system-libcurl OFF ON)
+		-DENABLE_BUNDLED_LIBYAML=$(usex system-libyaml OFF ON)
 		-DENABLE_BUNDLED_ZSTD="$(usex system-zstd OFF ON)"
 	)
 	cmake-utils_src_configure
@@ -184,6 +201,6 @@ pkg_postinst() {
 		elog "[1]: https://feedback.tarantool.io"
 		elog "[2]: https://github.com/tarantool/tarantool/commit/2ae373ae741dcf975c5d176316d8290c962446ba"
 		elog "[3]: https://github.com/tarantool/tarantool/commit/2ae373ae741dcf975c5d176316d8290c962446ba#diff-82b4b8a83aa989c9defd5b9fb1a13999R28"
+		elog
 	fi
-	elog
 }
