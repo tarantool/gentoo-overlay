@@ -8,7 +8,7 @@ CMAKE_MIN_VERSION=2.6
 
 case $PV in *9999*) VCS_ECLASS="git-r3" ;; *) VCS_ECLASS="" ;; esac
 
-inherit cmake-utils eutils user versionator ${VCS_ECLASS}
+inherit cmake-utils eutils user versionator tmpfiles ${VCS_ECLASS}
 
 # Major versions: 1, 2.
 MAJORV=$(get_version_component_range 1)
@@ -72,6 +72,7 @@ REQUIRED_USE="
 "
 
 TARANTOOL_HOME="/var/lib/tarantool"
+TARANTOOL_RUNDIR="/var/run/tarantool"
 TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
 
@@ -126,6 +127,10 @@ src_prepare() {
 			|| die "echo box.feedback"
 		rm src/box/lua/feedback_daemon.lua || die "rm feedback_daemon.lua"
 	fi
+
+	echo "d ${TARANTOOL_RUNDIR} 0750 ${TARANTOOL_USER} ${TARANTOOL_GROUP} -" > \
+		extra/dist/tarantool.tmpfiles.conf
+
 	default
 }
 
@@ -162,9 +167,8 @@ src_install() {
 	# Server binary and plugins
 	cmake-utils_src_install
 
-	# Run directory
-	keepdir /var/run/tarantool
-	fowners "${TARANTOOL_USER}:${TARANTOOL_GROUP}" /var/run/tarantool
+	# Keep run directory
+	newtmpfiles extra/dist/tarantool.tmpfiles.conf ${PN}.conf
 
 	# Data directory
 	keepdir /var/lib/tarantool
@@ -178,6 +182,9 @@ src_install() {
 }
 
 pkg_postinst() {
+	# Create a run directory
+	tmpfiles_process ${PN}.conf
+
 	elog
 	elog "It is possible to run multiple servers using init.d scrips. Consider"
 	elog "the following example:"
