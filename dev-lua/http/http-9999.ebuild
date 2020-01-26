@@ -23,5 +23,8 @@ LICENSE=""
 SLOT="0"
 IUSE=""
 
-DEPEND="dev-db/tarantool"
+DEPEND="
+	dev-db/tarantool
+	dev-lua/checks
+"
 RDEPEND="${DEPEND}"
