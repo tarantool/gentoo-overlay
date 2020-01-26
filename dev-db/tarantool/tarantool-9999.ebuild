@@ -72,7 +72,7 @@ REQUIRED_USE="
 "
 
 TARANTOOL_HOME="/var/lib/tarantool"
-TARANTOOL_RUNDIR="/var/run/tarantool"
+TARANTOOL_RUNDIR="/run/tarantool"
 TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
 
@@ -128,8 +128,14 @@ src_prepare() {
 		rm src/box/lua/feedback_daemon.lua || die "rm feedback_daemon.lua"
 	fi
 
+	# Tarantool CMake files do not provide a way to set rundir separately from
+	# datadir (/var/lib/tarantool) and logdir (/var/log/tarantool). So we need
+	# to set it manually in tarantoolctl configuration file.
+	sed -e "s#@TARANTOOL_RUNDIR@#${TARANTOOL_RUNDIR}#g" \
+		-i extra/dist/default/tarantool.in || die "patch rundir"
+
 	echo "d ${TARANTOOL_RUNDIR} 0750 ${TARANTOOL_USER} ${TARANTOOL_GROUP} -" > \
-		extra/dist/tarantool.tmpfiles.conf
+		extra/dist/tarantool.tmpfiles.conf || die "create tmpfiles conf"
 
 	default
 }
