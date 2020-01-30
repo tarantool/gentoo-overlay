@@ -1,6 +1,4 @@
 EAPI=6
-
-
 EGIT_REPO_URI="https://github.com/tarantool/tarantool-c.git"
 
 if [[ ${PV} = 9999* ]]; then
@@ -21,6 +19,3 @@ KEYWORDS="~amd64"
 DEPEND="dev-util/cmake
 		dev-libs/msgpuck"
 
-
-# Ugly hack. Should be removed later.
-#LDFLAGS="-luuid -lxml2 -lfcgi -lfcgi++ -lpthread -ldl -lcrypto"
