@@ -11,7 +11,7 @@ inherit eutils cmake-utils $GIT_ECLASS
 
 DESCRIPTION="Tarantool-c connector. Very fast framework, originaly developed by (C)Mail.ru"
 HOMEPAGE="http://tarantool.github.io/tarantool-c/index.html"
-LICENSE="GPL-2"
+LICENSE="BSD-2 clause"
 SLOT="0"
 
 # may be other arch....
