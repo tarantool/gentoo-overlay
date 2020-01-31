@@ -3,14 +3,11 @@
 
 EAPI=6
 
-case $PV in *9999*) VCS_ECLASS="git-r3" ;; *) VCS_ECLASS="" ;; esac
-
-inherit ${VCS_ECLASS}
-
 DESCRIPTION="Easy, terse, readable and fast function arguments type checking"
 HOMEPAGE="https://github.com/tarantool/checks"
 
-if [ -n "${VCS_ECLASS}" ]; then
+if [[ ${PV} == 9999 ]]; then
+	inherit git-r3
 	KEYWORDS=""
 	EGIT_REPO_URI="https://github.com/tarantool/$PN"
 else
