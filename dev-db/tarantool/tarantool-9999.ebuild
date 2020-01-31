@@ -6,9 +6,7 @@ EAPI=6
 
 CMAKE_MIN_VERSION=2.6
 
-case $PV in *9999*) VCS_ECLASS="git-r3" ;; *) VCS_ECLASS="" ;; esac
-
-inherit cmake-utils eutils user versionator tmpfiles ${VCS_ECLASS}
+inherit cmake-utils eutils user versionator tmpfiles
 
 # Major versions: 1, 2.
 MAJORV=$(get_version_component_range 1)
@@ -36,7 +34,8 @@ IUSE="
 	cpu_flags_x86_avx
 "
 
-if [ -n "${VCS_ECLASS}" ]; then
+if [[ ${PV} == 9999 ]]; then
+	inherit git-r3
 	KEYWORDS=""
 	EGIT_REPO_URI="https://github.com/tarantool/$PN"
 else
