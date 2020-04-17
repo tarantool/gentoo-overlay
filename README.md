@@ -1,7 +1,7 @@
 Tarantool Gentoo Overlay
 ========================
 
-Tarantool, http://tarantool.org/
+Tarantool, https://tarantool.org/
 
 Tarantool is an efficient NoSQL database and a Lua application server.
 

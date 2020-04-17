@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-<maintainer type="person">
+<maintainer type="person" status="active">
+	<email>alexander.turenko@tarantool.org</email>
+	<name>Alexander Turenko</name>
+</maintainer>
+<maintainer type="person" status="inactive">
 	<email>roman@tarantool.org</email>
 	<name>Roman Tsisyk</name>
 </maintainer>
 <upstream>
 	<remote-id type="github">tarantool/tarantool</remote-id>
 	<changelog>https://github.com/tarantool/tarantool/commits/master</changelog>
-	<doc lang="en">http://www.tarantool.org/</doc>
-	<bugs-to>https://bugs.launchpad.net/tarantool/</bugs-to>
+	<doc lang="en">https://www.tarantool.org/</doc>
+	<bugs-to>https://github.com/tarantool/tarantool/issues</bugs-to>
 </upstream>
 <use>
 	<flag name="backtrace">Support for detail backtraces</flag>
