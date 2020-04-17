@@ -113,7 +113,7 @@ src_prepare() {
 		# robust way; until [1] is not fixed
 		# [1]: https://github.com/tarantool/tarantool/issues/3308
 		local comment='disabled by USE=-feedback-daemon'
-		sed -e 's@^lua_source(lua_sources lua/feedback_daemon\.lua)$@# \0 # '"${comment}@" \
+		sed -e 's@^\s*lua_source(lua_sources lua/feedback_daemon\.lua)$@# \0 # '"${comment}@" \
 			-i src/box/CMakeLists.txt || die "sed feedback-daemon 1"
 		sed -e 's@^\s*feedback_daemon_lua\[\],$@// \0 // '"${comment}@" \
 			-e 's@^\s*"box/feedback_daemon", feedback_daemon_lua,@// \0 // '"${comment}@" \
