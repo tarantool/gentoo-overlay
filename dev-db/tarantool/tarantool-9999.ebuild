@@ -27,7 +27,7 @@ esac
 RELEASE=$(get_version_component_range 1-2)
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
-HOMEPAGE="http://tarantool.org"
+HOMEPAGE="https://tarantool.org"
 IUSE="
 	+backtrace debug feedback-daemon gcov gprof +system-libcurl
 	+system-libyaml +system-zstd systemd test cpu_flags_x86_sse2
@@ -40,7 +40,7 @@ if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="https://github.com/tarantool/$PN"
 else
 	KEYWORDS="~amd64 ~x86"
-	SRC_URI="http://download.tarantool.org/tarantool/${BUCKET}/src/${P}.tar.gz"
+	SRC_URI="https://download.tarantool.org/tarantool/${BUCKET}/src/${P}.tar.gz"
 fi
 RESTRICT="mirror"
 
