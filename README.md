@@ -22,6 +22,14 @@ The `repos.conf` entry for repository sync may look like the following:
 Please note that if you use existing repository location, you *need to
 remove the existing repository first*.
 
+Using repository with eselect-repository
+----------------------------------------
+
+    emerge --ask app-eselect/eselect-repository
+    mkdir -p /etc/portage/repos.conf
+    eselect repository enable tarantool
+    emaint sync -r tarantool
+
 Using repository with layman
 ----------------------------
 
