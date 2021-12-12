@@ -1,2 +1,5 @@
 .~*
 *~
+
+# Via Swap files.
+.*.sw[a-z]
