@@ -49,7 +49,6 @@ RDEPEND="
 	sys-libs/libunwind
 	sys-libs/readline:0
 	sys-libs/ncurses:0
-	dev-libs/libyaml
 	system-libcurl? ( >=net-misc/curl-7.65.3 )
 	system-libyaml? ( >=dev-libs/libyaml-0.2.2 )
 	system-zstd? ( app-arch/zstd )
