@@ -117,15 +117,31 @@ src_prepare() {
 		# Applying a patch would fail due to differences across
 		# versions, so going to the bad (but robust) way.
 		local comment='disabled by USE=-feedback-daemon'
+
 		sed -e 's@^\s*lua_source(lua_sources lua/feedback_daemon\.lua)$@# \0 # '"${comment}@" \
-			-i src/box/CMakeLists.txt || die "sed feedback-daemon 1"
+			-i src/box/CMakeLists.txt
+		[ "$(grep "${comment}" src/box/CMakeLists.txt | wc -l)" = 1 ] || \
+			die "sed out feedback-daemon from src/box/CMakeLists.txt"
+
 		sed -e 's@^\s*feedback_daemon_lua\[\],$@// \0 // '"${comment}@" \
 			-e 's@^\s*"box/feedback_daemon", feedback_daemon_lua,@// \0 // '"${comment}@" \
-			-i src/box/lua/init.c || die "sed feedback-daemon 2"
+			-i src/box/lua/init.c
+		[ "$(grep "${comment}" src/box/lua/init.c | wc -l)" = 2 ] || \
+			die "sed out feedback-daemon from src/box/lua/init.c"
+
+		# Comment out feedback_* fields in default_cfg,
+		# template_cfg, dynamic_cfg tables.
+		#
+		# feedback_crashinfo appears since 2.7.0.154, but we use
+		# -DENABLE_FEEDBACK_DAEMON=OFF CMake flag since 2.4.0.231.
+		# Ignore it so.
 		sed -e 's@^\s*feedback_enabled *=.*$@-- \0 -- '"${comment}@" \
 			-e 's@^\s*feedback_host *=.*$@-- \0 -- '"${comment}@" \
 			-e 's@^\s*feedback_interval *=.*$@-- \0 -- '"${comment}@" \
-			-i src/box/lua/load_cfg.lua || die "sed feedback-daemon 3"
+			-i src/box/lua/load_cfg.lua
+		[ "$(grep "${comment}" src/box/lua/load_cfg.lua | wc -l)" = 9 ] || \
+			die "sed out feedback-daemon from src/box/lua/load_cfg.lua"
+
 		echo 'box.feedback = nil' >> src/box/lua/schema.lua \
 			|| die "echo box.feedback"
 		rm src/box/lua/feedback_daemon.lua || die "rm feedback_daemon.lua"
@@ -135,7 +151,9 @@ src_prepare() {
 	# datadir (/var/lib/tarantool) and logdir (/var/log/tarantool). So we need
 	# to set it manually in tarantoolctl configuration file.
 	sed -e "s#@TARANTOOL_RUNDIR@#${TARANTOOL_RUNDIR}#g" \
-		-i extra/dist/default/tarantool.in || die "patch rundir"
+		-i extra/dist/default/tarantool.in
+	grep "${TARANTOOL_RUNDIR}" extra/dist/default/tarantool.in || \
+		die "patch rundir"
 
 	echo "d ${TARANTOOL_RUNDIR} 0750 ${TARANTOOL_USER} ${TARANTOOL_GROUP} -" > \
 		extra/dist/tarantool.tmpfiles.conf || die "create tmpfiles conf"
