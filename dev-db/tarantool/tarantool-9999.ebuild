@@ -62,7 +62,7 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	|| ( >=sys-devel/gcc-4.5[cxx]  >=sys-devel/clang-3.2 )
-	test? ( dev-python/python-daemon dev-python/pyyaml dev-python/pexpect )
+	test? ( dev-python/gevent dev-python/pyyaml )
 "
 
 REQUIRED_USE="
@@ -189,6 +189,12 @@ src_configure() {
 		-DENABLE_FEEDBACK_DAEMON="$(usex feedback-daemon)"
 	)
 	cmake-utils_src_configure
+}
+
+src_test() {
+	pushd "${BUILD_DIR}" > /dev/null || die
+	emake test
+	popd > /dev/null || die
 }
 
 src_install() {
