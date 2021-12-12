@@ -6,7 +6,7 @@ EAPI=6
 
 CMAKE_MIN_VERSION=2.6
 
-inherit cmake-utils eutils user versionator tmpfiles
+inherit cmake-utils user versionator tmpfiles
 
 MAJORV=$(get_version_component_range 1)
 MINORV=$(get_version_component_range 2)
