@@ -57,7 +57,6 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
-	|| ( >=sys-devel/gcc-4.5[cxx]  >=sys-devel/clang-3.2 )
 	test? ( dev-python/gevent dev-python/pyyaml )
 "
 
@@ -71,15 +70,6 @@ TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
 
 pkg_pretend() {
-	# clang is not sloted at this moment, we are ok with any installed one.
-	if [[ $(tc-getCC) == clang ]]; then
-		:
-	elif [[ $(gcc-major-version) -lt 4 ]] || {
-		[[ $(gcc-major-version) -eq 4 && $(gcc-minor-version) -lt 5 ]]; } then
-		 eerror "Compilation with gcc older than 4.5 is not supported"
-		 die "Too old gcc found."
-	fi
-
 	if ! use system-libcurl && ! ( \
 			([[ ${PV} =~ ^1.* ]] && version_is_at_least 1.10.3.120) || \
 			([[ ${PV} =~ ^2.1.* ]] && version_is_at_least 2.1.2.155) || \
