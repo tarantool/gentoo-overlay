@@ -8,23 +8,30 @@ CMAKE_MIN_VERSION=2.6
 
 inherit cmake-utils eutils user versionator tmpfiles
 
-# Major versions: 1, 2.
 MAJORV=$(get_version_component_range 1)
-# Minor versions: 0 (alpha), 1 (beta), 2-9 (stable), 10 (LTS).
 MINORV=$(get_version_component_range 2)
-# Buckets: 1.9, 1.10, 2x (alpha and beta), 2.[2-9] (stable), 2.10 (LTS).
-case $MINORV in
-[01])
-	# Alpha and beta.
-	BUCKET="${MAJORV}x"
-	;;
-*)
-	# Stable and LTS.
-	BUCKET="${MAJORV}.${MINORV}"
-	;;
-esac
-# Releases: 1.9, 1.10, 2.0, 2.1.
-RELEASE=$(get_version_component_range 1-2)
+
+# Version enumeration policy and source tarballs layout were
+# changed, handle it.
+#
+# https://github.com/tarantool/tarantool/discussions/6182
+if [ "${PV}" = 9999 ]; then
+	inherit git-r3
+	KEYWORDS=""
+	SERIES="9999"
+	EGIT_REPO_URI="https://github.com/tarantool/${PN}"
+elif [ "${MAJORV}" = 1 ] || ([ "${MAJORV}" = 2 ] && [ "${MINORV}" -lt 10 ]); then
+	# Old release policy.
+	KEYWORDS="~amd64 ~x86"
+	SERIES="${MAJORV}.${MINORV}"
+	SRC_URI="https://download.tarantool.org/tarantool/${SERIES}/src/${P}.tar.gz"
+else
+	# New release policy.
+	KEYWORDS="~amd64 ~x86 ~arm64"
+	SERIES="${MAJORV}"
+	SRC_URI="https://download.tarantool.org/tarantool/src/${P/_/-}.tar.gz"
+	S="${WORKDIR}/${P/_/-}"
+fi
 
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="https://tarantool.org"
@@ -34,22 +41,12 @@ IUSE="
 	cpu_flags_x86_avx
 "
 
-if [[ ${PV} == 9999 ]]; then
-	inherit git-r3
-	KEYWORDS=""
-	EGIT_REPO_URI="https://github.com/tarantool/$PN"
-else
-	KEYWORDS="~amd64 ~x86"
-	SRC_URI="https://download.tarantool.org/tarantool/${BUCKET}/src/${P}.tar.gz"
-fi
 RESTRICT="mirror"
-
-SLOT="0/${RELEASE}"
+SLOT="0/${SERIES}"
 LICENSE="BSD-2"
-KEYWORDS="~x86 ~amd64 ~x64-macos"
 
 RDEPEND="
-	!x64-macos? ( sys-libs/libunwind )
+	sys-libs/libunwind
 	sys-libs/readline:0
 	sys-libs/ncurses:0
 	dev-libs/libyaml
@@ -67,7 +64,6 @@ DEPEND="
 
 REQUIRED_USE="
 	cpu_flags_x86_avx? ( cpu_flags_x86_sse2 )
-	x64-macos? ( !backtrace )
 "
 
 TARANTOOL_HOME="/var/lib/tarantool"
