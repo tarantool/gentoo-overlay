@@ -105,13 +105,17 @@ pkg_setup() {
 }
 
 src_prepare() {
-	if ! use feedback-daemon && ( \
+	# -DENABLE_FEEDBACK_DAEMON=OFF does the job, but it is
+	# available only since 2.4.0.231 (see [1]).
+	#
+	# [1]: https://github.com/tarantool/tarantool/issues/3308
+	if ! use feedback-daemon && ! version_is_at_least 2.4.0.231 && ( \
 			([[ ${PV} =~ ^1.* ]] && version_is_at_least 1.10.0.28) || \
-			([[ ${PV} =~ ^2.* ]] && version_is_at_least 2.0.4.163) || \
-			[[ ${PV} == 9999 ]]); then
-		# revert 2ae373ae741dcf975c5d176316d8290c962446ba in more or less
-		# robust way; until [1] is not fixed
-		# [1]: https://github.com/tarantool/tarantool/issues/3308
+			([[ ${PV} =~ ^2.* ]] && version_is_at_least 2.0.4.163)); then
+		# Revert 2ae373ae741dcf975c5d176316d8290c962446ba.
+		#
+		# Applying a patch would fail due to differences across
+		# versions, so going to the bad (but robust) way.
 		local comment='disabled by USE=-feedback-daemon'
 		sed -e 's@^\s*lua_source(lua_sources lua/feedback_daemon\.lua)$@# \0 # '"${comment}@" \
 			-i src/box/CMakeLists.txt || die "sed feedback-daemon 1"
@@ -159,6 +163,7 @@ src_configure() {
 		-DENABLE_BUNDLED_LIBCURL=$(usex system-libcurl OFF ON)
 		-DENABLE_BUNDLED_LIBYAML=$(usex system-libyaml OFF ON)
 		-DENABLE_BUNDLED_ZSTD="$(usex system-zstd OFF ON)"
+		-DENABLE_FEEDBACK_DAEMON="$(usex feedback-daemon)"
 	)
 	cmake-utils_src_configure
 }
