@@ -158,7 +158,7 @@ src_prepare() {
 	echo "d ${TARANTOOL_RUNDIR} 0750 ${TARANTOOL_USER} ${TARANTOOL_GROUP} -" > \
 		extra/dist/tarantool.tmpfiles.conf || die "create tmpfiles conf"
 
-	default
+	cmake-utils_src_prepare
 }
 
 src_configure() {
