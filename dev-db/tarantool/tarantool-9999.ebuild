@@ -196,13 +196,16 @@ src_install() {
 
 	# Data directory
 	keepdir /var/lib/tarantool
-	fowners "${TARANTOOL_USER}:${TARANTOOL_GROUP}" /var/log/tarantool
 
 	# Lua scrips
 	keepdir /usr/share/tarantool
 
 	# Init script
 	newinitd "${FILESDIR}/tarantool.initd" tarantool
+
+	# Log directory
+	keepdir /var/log/tarantool
+	fowners "${TARANTOOL_USER}:${TARANTOOL_GROUP}" /var/log/tarantool
 }
 
 pkg_postinst() {
