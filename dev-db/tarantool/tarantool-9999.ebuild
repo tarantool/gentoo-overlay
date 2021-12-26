@@ -146,7 +146,12 @@ src_prepare() {
 	# Necessary for building with glibc-2.34.
 	#
 	# https://github.com/tarantool/tarantool/issues/6686
-	eapply "${FILESDIR}/gh-6686-fix-build-with-glibc-2-34.patch"
+	#
+	# The fix land into 1.10.11-63-gbe0f44de1, 2.8.2-83-gbba7a2fad,
+	# 2.10.0-beta1-377-g9c01b325a, but the version check is a bit
+	# tricky, so just find the erroneous pattern in the code.
+	grep '^static char stack_buf\[SIGSTKSZ\];$' test/unit/guard.cc && \
+		eapply "${FILESDIR}/gh-6686-fix-build-with-glibc-2-34.patch"
 
 	cmake-utils_src_prepare
 }
