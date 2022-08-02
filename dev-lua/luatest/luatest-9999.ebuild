@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit cmake-utils
+inherit cmake
 
 DESCRIPTION="Tarantool test framework written in Lua"
 HOMEPAGE="https://github.com/tarantool/luatest/"

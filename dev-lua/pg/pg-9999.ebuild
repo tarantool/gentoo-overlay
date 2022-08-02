@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit cmake-utils
+inherit cmake
 
 DESCRIPTION="PostgreSQL connector for Tarantool"
 HOMEPAGE="https://github.com/tarantool/pg"
