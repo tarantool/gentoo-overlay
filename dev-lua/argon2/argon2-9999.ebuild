@@ -4,7 +4,7 @@
 EAPI=7
 
 CMAKE_MAKEFILE_GENERATOR="emake"
-inherit cmake-utils
+inherit cmake
 
 DESCRIPTION="Tarantool C binding for the Argon2 password hashing algorithm"
 HOMEPAGE="https://github.com/tarantool/argon2/"

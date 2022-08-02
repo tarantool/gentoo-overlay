@@ -2,14 +2,17 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=6
+EAPI=7
 
-CMAKE_MIN_VERSION=2.6
+inherit cmake user tmpfiles
 
-inherit cmake-utils user versionator tmpfiles
+MAJORV=$(ver_cut 1)
+MINORV=$(ver_cut 2)
 
-MAJORV=$(get_version_component_range 1)
-MINORV=$(get_version_component_range 2)
+# Ninja makefile generator is only supported in master.
+if [ "${PV}" != 9999 ]; then
+	CMAKE_MAKEFILE_GENERATOR=emake
+fi
 
 # Version enumeration policy and source tarballs layout were
 # changed, handle it.
@@ -45,6 +48,8 @@ RESTRICT="mirror"
 SLOT="0/${SERIES}"
 LICENSE="BSD-2"
 
+BDEPEND=">=dev-util/cmake-2.6"
+
 RDEPEND="
 	sys-libs/libunwind
 	sys-libs/readline:0
@@ -71,10 +76,10 @@ TARANTOOL_GROUP=tarantool
 
 pkg_pretend() {
 	if ! use system-libcurl && ! ( \
-			([[ ${PV} =~ ^1.* ]] && version_is_at_least 1.10.3.120) || \
-			([[ ${PV} =~ ^2.1.* ]] && version_is_at_least 2.1.2.155) || \
-			([[ ${PV} =~ ^2.2.* ]] && version_is_at_least 2.2.1.19) || \
-			([[ ${PV} =~ ^2.3.* ]] && version_is_at_least 2.3.0.42) || \
+			([[ ${PV} =~ ^1.* ]] && ver_test ${PV} -ge 1.10.3.120) || \
+			([[ ${PV} =~ ^2.1.* ]] && ver_test ${PV} -ge 2.1.2.155) || \
+			([[ ${PV} =~ ^2.2.* ]] && ver_test ${PV} -ge 2.2.1.19) || \
+			([[ ${PV} =~ ^2.3.* ]] && ver_test ${PV} -ge 2.3.0.42) || \
 			[[ ${PV} == 9999 ]]); then
 		eerror "USE flag \"system-libcurl\" is disabled, but ${PF} version"
 		eerror "is older then needed for using bundled libcurl."
@@ -94,9 +99,9 @@ src_prepare() {
 	# available only since 2.4.0.231 (see [1]).
 	#
 	# [1]: https://github.com/tarantool/tarantool/issues/3308
-	if ! use feedback-daemon && ! version_is_at_least 2.4.0.231 && ( \
-			([[ ${PV} =~ ^1.* ]] && version_is_at_least 1.10.0.28) || \
-			([[ ${PV} =~ ^2.* ]] && version_is_at_least 2.0.4.163)); then
+	if ! use feedback-daemon && ! ver_test ${PV} -ge 2.4.0.231 && ( \
+			([[ ${PV} =~ ^1.* ]] && ver_test ${PV} -ge 1.10.0.28) || \
+			([[ ${PV} =~ ^2.* ]] && ver_test ${PV} -ge 2.0.4.163)); then
 		# Revert 2ae373ae741dcf975c5d176316d8290c962446ba.
 		#
 		# Applying a patch would fail due to differences across
@@ -153,7 +158,7 @@ src_prepare() {
 	grep '^static char stack_buf\[SIGSTKSZ\];$' test/unit/guard.cc && \
 		eapply "${FILESDIR}/gh-6686-fix-build-with-glibc-2-34.patch"
 
-	cmake-utils_src_prepare
+	cmake_src_prepare
 }
 
 src_configure() {
@@ -178,7 +183,7 @@ src_configure() {
 		-DENABLE_BUNDLED_ZSTD="$(usex system-zstd OFF ON)"
 		-DENABLE_FEEDBACK_DAEMON="$(usex feedback-daemon)"
 	)
-	cmake-utils_src_configure
+	cmake_src_configure
 }
 
 src_test() {
@@ -194,7 +199,7 @@ src_install() {
 	dodoc TODO
 
 	# Server binary and plugins
-	cmake-utils_src_install
+	cmake_src_install
 
 	# Keep run directory
 	newtmpfiles extra/dist/tarantool.tmpfiles.conf ${PN}.conf

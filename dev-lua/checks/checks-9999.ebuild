@@ -1,7 +1,7 @@
 # Copyright 1999-2020 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 DESCRIPTION="Easy, terse, readable and fast function arguments type checking"
 HOMEPAGE="https://github.com/tarantool/checks"

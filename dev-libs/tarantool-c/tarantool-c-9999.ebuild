@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit cmake-utils
+inherit cmake
 
 DESCRIPTION=""
 HOMEPAGE="https://github.com/tarantool/tarantool-c"
@@ -39,5 +39,5 @@ src_configure() {
 	local mycmakeargs=(
 		-DENABLE_BUNDLED_MSGPUCK=$(usex system-msgpuck OFF ON)
 	)
-	cmake-utils_src_configure
+	cmake_src_configure
 }
