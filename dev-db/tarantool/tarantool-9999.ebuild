@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit cmake user tmpfiles
+inherit cmake tmpfiles
 
 MAJORV=$(ver_cut 1)
 MINORV=$(ver_cut 2)
@@ -48,7 +48,11 @@ RESTRICT="mirror"
 SLOT="0/${SERIES}"
 LICENSE="BSD-2"
 
-BDEPEND=">=dev-util/cmake-2.6"
+BDEPEND="
+	acct-group/tarantool
+	acct-user/tarantool
+	>=dev-util/cmake-2.6
+"
 
 RDEPEND="
 	sys-libs/libunwind
@@ -69,7 +73,6 @@ REQUIRED_USE="
 	cpu_flags_x86_avx? ( cpu_flags_x86_sse2 )
 "
 
-TARANTOOL_HOME="/var/lib/tarantool"
 TARANTOOL_RUNDIR="/run/tarantool"
 TARANTOOL_USER=tarantool
 TARANTOOL_GROUP=tarantool
@@ -85,13 +88,6 @@ pkg_pretend() {
 		eerror "is older then needed for using bundled libcurl."
 		die "Cannot enable system libcurl."
 	fi
-}
-
-pkg_setup() {
-	ebegin "Creating tarantool user and group"
-	enewgroup ${TARANTOOL_GROUP}
-	enewuser ${TARANTOOL_USER} -1 -1 "${TARANTOOL_HOME}" ${TARANTOOL_GROUP}
-	eend $?
 }
 
 src_prepare() {
