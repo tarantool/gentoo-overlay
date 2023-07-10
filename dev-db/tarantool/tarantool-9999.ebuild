@@ -164,6 +164,12 @@ src_configure() {
 		export CMAKE_BUILD_TYPE=RelWithDebInfo
 	fi
 
+	# https://github.com/tarantool/gentoo-overlay/issues/73
+	if use system-zstd; then
+		CFLAGS="$CFLAGS -Wno-deprecated-declarations"
+		CXXFLAGS="$CXXFLAGS -Wno-deprecated-declarations"
+	fi
+
 	local mycmakeargs=(
 		-DENABLE_BACKTRACE="$(usex backtrace)"
 		-DENABLE_SSE2="$(usex cpu_flags_x86_sse2)"
