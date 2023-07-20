@@ -9,8 +9,8 @@ inherit cmake tmpfiles
 MAJORV=$(ver_cut 1)
 MINORV=$(ver_cut 2)
 
-# Ninja makefile generator is only supported in master.
-if [ "${PV}" != 9999 ]; then
+# The Ninja makefile generator has been supported since version 2.10.1 (yanked).
+if ver_test ${PV} -lt 2.10.2; then
 	CMAKE_MAKEFILE_GENERATOR=emake
 fi
 
