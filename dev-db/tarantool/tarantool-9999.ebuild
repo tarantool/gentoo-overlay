@@ -39,9 +39,9 @@ fi
 DESCRIPTION="Tarantool - an efficient, extensible in-memory data store."
 HOMEPAGE="https://tarantool.org"
 IUSE="
-	+backtrace debug feedback-daemon gcov gprof +system-libcurl
-	+system-libyaml +system-zstd systemd test cpu_flags_x86_sse2
-	cpu_flags_x86_avx
+	+backtrace debug embed-luarocks feedback-daemon gcov gprof
+	+system-libcurl +system-libyaml +system-zstd systemd test
+	cpu_flags_x86_sse2 cpu_flags_x86_avx
 "
 
 RESTRICT="mirror"
@@ -184,6 +184,7 @@ src_configure() {
 		-DENABLE_BUNDLED_LIBYAML=$(usex system-libyaml OFF ON)
 		-DENABLE_BUNDLED_ZSTD="$(usex system-zstd OFF ON)"
 		-DENABLE_FEEDBACK_DAEMON="$(usex feedback-daemon)"
+		-DEMBED_LUAROCKS="$(usex embed-luarocks)"
 	)
 	cmake_src_configure
 }
