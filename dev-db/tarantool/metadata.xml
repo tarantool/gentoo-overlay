@@ -17,6 +17,7 @@
 </upstream>
 <use>
 	<flag name="backtrace">Support for detail backtraces</flag>
+	<flag name="embed-luarocks">Embed LuaRocks into tarantool binary</flag>
 	<flag name="gcov">Build with coverage support</flag>
 	<flag name="gprof">Build with profiling support</flag>
 </use>
