@@ -18,8 +18,12 @@
 <use>
 	<flag name="backtrace">Support for detail backtraces</flag>
 	<flag name="embed-luarocks">Embed LuaRocks into tarantool binary</flag>
+	<flag name="feedback-daemon">Build with feedback daemon which reports debug data to the Tarantool team</flag>
 	<flag name="gcov">Build with coverage support</flag>
 	<flag name="gprof">Build with profiling support</flag>
+	<flag name="system-libcurl">Build using system libcurl</flag>
+	<flag name="system-libyaml">Build using system libyaml</flag>
+	<flag name="system-zstd">Build using system zstd</flag>
 </use>
 <longdescription>
 	Tarantool is an in-memory database designed to store the most volatile
