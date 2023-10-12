@@ -1,0 +1,13 @@
+diff --git a/magefile.go b/magefile.go
+index 53ffafd..90d50a6 100644
+--- a/magefile.go
++++ b/magefile.go
+@@ -186,7 +186,7 @@ func Build() error {
+ 	}
+ 
+ 	err := sh.RunWith(
+-		getBuildEnvironment(), goExecutableName, "build",
++		getBuildEnvironment(), goExecutableName, "build", "-mod", "vendor",
+ 		"-o", ttExecutableName,
+ 		tags,
+ 		"-ldflags", strings.Join(buildLdflags, " "),
