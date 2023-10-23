@@ -6,8 +6,6 @@ inherit go-module bash-completion-r1
 
 DESCRIPTION="Command-line utility to manage Tarantool applications"
 HOMEPAGE="https://github.com/tarantool/tt"
-EGO_PN=github.com/tarantool/${PN}
-EGIT_REPO_URI="https://${EGO_PN}.git"
 
 # The project is licensed under BSD-2, other licenses are from its
 # dependencies.
@@ -17,6 +15,9 @@ BDEPEND=">=dev-lang/go-1.18 dev-util/mage"
 
 if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
+	EGO_PN=github.com/tarantool/${PN}
+	EGIT_REPO_URI="https://${EGO_PN}.git"
+
 	src_unpack() {
 		git-r3_src_unpack
 		mage -d ${PN}-9999 PatchCC GenerateGoCode
