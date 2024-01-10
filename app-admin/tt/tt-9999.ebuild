@@ -32,6 +32,7 @@ else
 	SRC_URI="https://github.com/tarantool/tt/releases/download/v${PV}/${P}-complete.tar.gz"
 	SRC_URI+=" https://github.com/tarantool/tt/releases/download/v${PV}/${P}-deps.tar.xz"
 	KEYWORDS="~amd64"
+	RESTRICT="mirror"
 fi
 
 src_compile() {
