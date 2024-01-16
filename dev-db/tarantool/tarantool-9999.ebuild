@@ -51,7 +51,7 @@ LICENSE="BSD-2"
 BDEPEND="
 	acct-group/tarantool
 	acct-user/tarantool
-	>=dev-util/cmake-2.6
+	>=dev-build/cmake-2.6
 "
 
 RDEPEND="
