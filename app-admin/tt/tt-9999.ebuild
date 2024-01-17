@@ -11,7 +11,7 @@ HOMEPAGE="https://github.com/tarantool/tt"
 # dependencies.
 LICENSE="BSD-2 MIT Apache-2.0 BSD MPL-2.0"
 SLOT="0"
-BDEPEND=">=dev-lang/go-1.18 dev-util/mage"
+BDEPEND=">=dev-lang/go-1.18 dev-build/mage"
 
 if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
