@@ -136,13 +136,20 @@ src_prepare() {
 	# Tarantool CMake files do not provide a way to set rundir separately from
 	# datadir (/var/lib/tarantool) and logdir (/var/log/tarantool). So we need
 	# to set it manually in tarantoolctl configuration file.
-	sed -e "s#@TARANTOOL_RUNDIR@#${TARANTOOL_RUNDIR}#g" \
-		-i extra/dist/default/tarantool.in
-	grep "${TARANTOOL_RUNDIR}" extra/dist/default/tarantool.in || \
-		die "patch rundir"
+	#
+	# The tarantoolctl tool is removed in the series-3 releases. See [1] for
+	# details.
+	#
+	# [1]: https://github.com/tarantool/tarantool/issues/9443
+	if ver_test ${PV} -le 3.0; then
+		sed -e "s#@TARANTOOL_RUNDIR@#${TARANTOOL_RUNDIR}#g" \
+			-i extra/dist/default/tarantool.in
+		grep "${TARANTOOL_RUNDIR}" extra/dist/default/tarantool.in || \
+			die "patch rundir"
+	fi
 
 	echo "d ${TARANTOOL_RUNDIR} 0750 ${TARANTOOL_USER} ${TARANTOOL_GROUP} -" > \
-		extra/dist/tarantool.tmpfiles.conf || die "create tmpfiles conf"
+		extra/tarantool.tmpfiles.conf || die "create tmpfiles conf"
 
 	# Necessary for building with glibc-2.34.
 	#
@@ -205,7 +212,7 @@ src_install() {
 	cmake_src_install
 
 	# Keep run directory
-	newtmpfiles extra/dist/tarantool.tmpfiles.conf ${PN}.conf
+	newtmpfiles extra/tarantool.tmpfiles.conf ${PN}.conf
 
 	# Data directory
 	keepdir /var/lib/tarantool
@@ -214,7 +221,14 @@ src_install() {
 	keepdir /usr/share/tarantool
 
 	# Init script
-	newinitd "${FILESDIR}/tarantool.initd" tarantool
+	#
+	# The init script is based on the tarantoolctl tool, which is removed in
+	# 3.0 and 3.1 releases. See [1] for details.
+	#
+	# [1]: https://github.com/tarantool/tarantool/issues/9443
+	if ver_test ${PV} -le 3.0; then
+		newinitd "${FILESDIR}/tarantool.initd" tarantool
+	fi
 
 	# Log directory
 	keepdir /var/log/tarantool
@@ -225,20 +239,6 @@ pkg_postinst() {
 	# Create a run directory
 	tmpfiles_process ${PN}.conf
 
-	elog
-	elog "It is possible to run multiple servers using init.d scrips. Consider"
-	elog "the following example:"
-	elog
-	elog "Create a service:"
-	elog "$ vim /etc/tarantool/instances.available/tarantool-myservice.lua"
-	elog
-	elog "OpenRC:"
-	elog "$ ln -s /etc/init.d/tarantool /etc/init.d/tarantool-myservice"
-	elog "$ rc-service tarantool-myservice start"
-	elog
-	elog "Systemd:"
-	elog "$ service tarantool@myservice start"
-	elog
 	if use feedback-daemon; then
 		elog "You have feedback-daemon USE flag enabled."
 		elog "This enables sending information about long-running (> 1 hour)"
