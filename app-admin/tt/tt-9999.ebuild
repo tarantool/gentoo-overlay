@@ -40,6 +40,7 @@ src_compile() {
 	mkdir -pv completions || die
 	./tt completion bash > completions/${PN} || die
 	./tt completion zsh > completions/_${PN} || die
+	./tt init
 }
 
 src_test() {
@@ -52,4 +53,7 @@ src_install() {
 	dobashcomp completions/${PN}
 	insinto /usr/share/zsh/site-functions
 	doins completions/_${PN}
+
+	insinto /etc/tarantool
+	doins tt.yaml
 }
