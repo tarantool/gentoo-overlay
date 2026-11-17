@@ -11,7 +11,21 @@ HOMEPAGE="https://github.com/tarantool/tt"
 # dependencies.
 LICENSE="BSD-2 MIT Apache-2.0 BSD MPL-2.0"
 SLOT="0"
-BDEPEND=">=dev-lang/go-1.18 dev-build/mage"
+
+# Minimal Go version is taken from the `go` directive in go.mod of a
+# release.
+if [[ ${PV} == *9999* ]]; then
+	GO_MIN="1.26.10"
+elif ver_test ${PV} -ge 2.15.0; then
+	GO_MIN="1.25.7"
+elif ver_test ${PV} -ge 2.11.0; then
+	GO_MIN="1.23.8"
+elif ver_test ${PV} -ge 2.5.0; then
+	GO_MIN="1.21"
+else
+	GO_MIN="1.20"
+fi
+BDEPEND=">=dev-lang/go-${GO_MIN} dev-build/mage"
 
 if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
