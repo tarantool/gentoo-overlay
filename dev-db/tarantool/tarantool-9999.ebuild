@@ -48,10 +48,13 @@ RESTRICT="mirror"
 SLOT="0/${SERIES}"
 LICENSE="BSD-2"
 
+# The bundled LuaJIT calls find_package(Git REQUIRED) at the configure
+# stage even when building from a release tarball.
 BDEPEND="
 	acct-group/tarantool
 	acct-user/tarantool
 	>=dev-build/cmake-2.6
+	dev-vcs/git
 "
 
 RDEPEND="
